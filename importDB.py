@@ -19,7 +19,7 @@ def safe_int(value, column_name):
 
 def safe_str(value, default='N'):
     """Ensure a value is a string, converting None or NaN to a default value."""
-    if pd.isnull(value):
+    if pd.isnull(value) or value is None:
         return default
     return str(value).strip()
 
@@ -31,7 +31,7 @@ counties = ["Imperial", "Kern", "Los Angeles", "Orange", "Riverside", "San Berna
 conn = psycopg2.connect(
     dbname="calsafe",
     user="postgres",
-    password="h6952thgB",
+    password="Fullerton",
     host="localhost"
 )
 cursor = conn.cursor()
@@ -115,13 +115,13 @@ for county in counties:
             RETURNING ENVIRONMENT_ID
             """,
             (
-                row['WEATHER_1'], 
-                row['WEATHER_2'], 
-                row['ROAD_SURFACE'], 
-                row['ROAD_COND_1'], 
-                row['ROAD_COND_2'], 
-                row['LIGHTING'], 
-                row['STATE_HWY_IND']
+                safe_str(row['WEATHER_1'])[:1], 
+                safe_str(row['WEATHER_2'])[:1], 
+                safe_str(row['ROAD_SURFACE'])[:1], 
+                safe_str(row['ROAD_COND_1'])[:1], 
+                safe_str(row['ROAD_COND_2'])[:1], 
+                safe_str(row['LIGHTING'][:1]), 
+                safe_str(row['STATE_HWY_IND'])[:1]
             )
         )
         environment_id = cursor.fetchone()[0]
@@ -159,36 +159,55 @@ for county in counties:
 
     # Process Parties data
     for index, row in parties_df.iterrows():
-        cursor.execute(
-            """
-            INSERT INTO Parties (CASE_ID, PARTY_NUMBER, PARTY_TYPE, AT_FAULT, PARTY_SEX, PARTY_AGE, PARTY_SOBRIETY, PARTY_DRUG_PHYSICAL, 
-                                 DIR_OF_TRAVEL, PARTY_SAFETY_EQUIP_1, PARTY_SAFETY_EQUIP_2, FINAN_RESPONS, VEHICLE_YEAR, VEHICLE_MAKE, 
-                                 STWD_VEHICLE_TYPE, INATTENTION, RACE, MOVE_PRE_ACC)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            RETURNING PARTY_ID
-            """,
-            (
+        # Prepare the arguments
+        try:   
+            arguments = (
                 case_id, 
                 safe_int(row['PARTY_NUMBER'], 'PARTY_NUMBER'),
-                safe_str(row['PARTY_TYPE']), 
-                safe_str(row['AT_FAULT']), 
-                safe_str(row['PARTY_SEX']), 
+                safe_str(row['PARTY_TYPE'])[:1], 
+                safe_str(row['AT_FAULT'])[:1], 
+                safe_str(row['PARTY_SEX'])[:1], 
                 safe_int(row['PARTY_AGE'], 'PARTY_AGE'),
-                safe_str(row['PARTY_SOBRIETY']), 
-                safe_str(row['PARTY_DRUG_PHYSICAL']), 
-                safe_str(row['DIR_OF_TRAVEL']), 
-                safe_str(row['PARTY_SAFETY_EQUIP_1']), 
-                safe_str(row['PARTY_SAFETY_EQUIP_2']), 
-                safe_str(row['FINAN_RESPONS']), 
+                safe_str(row['PARTY_SOBRIETY'])[:1], 
+                safe_str(row['PARTY_DRUG_PHYSICAL'])[:1], 
+                safe_str(row['DIR_OF_TRAVEL'])[:1], 
+                safe_str(row['PARTY_SAFETY_EQUIP_1'])[:1], 
+                safe_str(row['PARTY_SAFETY_EQUIP_2'])[:1], 
+                safe_str(row['FINAN_RESPONS'])[:1], 
                 safe_int(row['VEHICLE_YEAR'], 'VEHICLE_YEAR'),
                 safe_str(row['VEHICLE_MAKE']), 
-                safe_str(row['STWD_VEHICLE_TYPE']),
-                safe_str(row['INATTENTION']), 
-                safe_str(row['RACE']),
-                safe_str(row['MOVE_PRE_ACC'])
+                safe_str(row['STWD_VEHICLE_TYPE'])[:1],
+                safe_str(row['INATTENTION'])[:1], 
+                safe_str(row['RACE'])[:1],
+                safe_str(row['MOVE_PRE_ACC'])[:1]
             )
-        )
-        party_id = cursor.fetchone()[0]
+
+            # Debug: Print each argument's value and type
+            #for i, arg in enumerate(arguments):
+            #    print(f"Argument {i+1}: Value = {arg}, Type = {type(arg)}")
+
+            # Print the SQL query with arguments for debugging
+            query = """
+                INSERT INTO Parties (CASE_ID, PARTY_NUMBER, PARTY_TYPE, AT_FAULT, PARTY_SEX, PARTY_AGE, PARTY_SOBRIETY, PARTY_DRUG_PHYSICAL, 
+                                     DIR_OF_TRAVEL, PARTY_SAFETY_EQUIP_1, PARTY_SAFETY_EQUIP_2, FINAN_RESPONS, VEHICLE_YEAR, VEHICLE_MAKE, 
+                                     STWD_VEHICLE_TYPE, INATTENTION, RACE, MOVE_PRE_ACC)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                RETURNING PARTY_ID
+            """
+
+            sql_formatted = cursor.mogrify(query, arguments)
+            #print(f"SQL Query: \n{sql_formatted}")
+
+            # Execute the SQL query
+            cursor.execute(sql_formatted)
+            party_id = cursor.fetchone()[0]
+        
+        except Exception as e:
+            print(f"Error occurred: {e}")
+            print(f"Arguments: {arguments}")
+            break  # Stop processing further to address the issue
+
+        
 
     # Process Victims data
     for index, row in victims_df.iterrows():
@@ -199,16 +218,16 @@ for county in counties:
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
-                case_id, 
+                case_id,
                 party_id, 
-                row['VICTIM_ROLE'], 
-                row['VICTIM_SEX'], 
+                safe_str(row['VICTIM_ROLE']), 
+                safe_str(row['VICTIM_SEX']), 
                 safe_int(row['VICTIM_AGE'], 'VICTIM_AGE'),
-                row['VICTIM_DEGREE_OF_INJURY'], 
-                row['VICTIM_SEATING_POSITION'], 
-                row['VICTIM_SAFETY_EQUIP_1'], 
-                row['VICTIM_SAFETY_EQUIP_2'], 
-                row['VICTIM_EJECTED']
+                safe_str(row['VICTIM_DEGREE_OF_INJURY']), 
+                safe_str(row['VICTIM_SEATING_POSITION']), 
+                safe_str(row['VICTIM_SAFETY_EQUIP_1']), 
+                safe_str(row['VICTIM_SAFETY_EQUIP_2']), 
+                safe_str(row['VICTIM_EJECTED'])
             )
         )
 
