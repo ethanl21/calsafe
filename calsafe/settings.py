@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'trafficdata',
+    'accidents',
+    'api',
+    'ui',
+    'analytics',
+    'gistools',
 ]
 
 MIDDLEWARE = [
