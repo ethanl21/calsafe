@@ -10,7 +10,7 @@ const NavBar = () => {
     <nav className={styles.nav}>
       <ul className={styles.navLinks}>
         <li>
-          <Link href="/">Home</Link>
+          <Link href="/">Query</Link>
         </li>
         <li>
           <Link href="/map">Map</Link>
