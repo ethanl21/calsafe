@@ -17,7 +17,8 @@
 
 ## Initial Setup of Database:
   - I'm using pgAdmin to manage the database, I suggest you use it.
-  - SQL table is provided to populate the database
+  - SQL table is provided for definitions
+  - Use the importDB.py to populate the database with all crash data (It may take up to 10 minutes)
 
 ## Running the Website:
 ## Django is configured to run on localhost:8000/
