@@ -26,4 +26,20 @@
 ## Next.js is configured to run on localhost:3000/
   - To start Next.js, run "npm run dev" on the console
 
-
+# File Directory
+## calsafe
+  - All Django files reside here
+## calsafejs
+  - All Frontend files reside here
+## api
+  - API that feeds from database into website is here
+## SQL
+  - SQL table definitions
+## data
+  - CSV files for all Southern California counties
+## accidents
+  - Currently unused
+## analytics
+  - Future home to analytics processing for statistics page
+## gistools
+  - Currently unused, but may be future home to GIS support tools for the map
