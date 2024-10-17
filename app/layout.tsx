@@ -1,25 +1,25 @@
 // app/layout.tsx
 
-import './globals.css';
-import 'leaflet/dist/leaflet.css';
-import NavBar from '../components/NavBar';
+import "./globals.css";
+import "leaflet/dist/leaflet.css";
+import NavBar from "../components/NavBar";
 
 export const metadata = {
-  title: 'CalSafe',
-  description: 'A map showing traffic data',
+	title: "CalSafe",
+	description: "A map showing traffic data",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="en">
-      <body>
-        <NavBar />
-        {children}
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en">
+			<body>
+				<NavBar />
+				{children}
+			</body>
+		</html>
+	);
 }
