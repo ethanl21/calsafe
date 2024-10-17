@@ -2,7 +2,6 @@
 "use client";
 
 import { useState } from "react";
-import "./styles.css";
 
 interface Location {
 	primary_rd: string;
@@ -318,18 +317,18 @@ const AccidentQueryPage = () => {
 			{loading && <p>Loading...</p>}
 			{error && <p style={{ color: "red" }}>{error}</p>}
 
-			<div className="results-container">
+			<div className="flex flex-col gap-5">
 				<h2>Results:</h2>
 				{results.length > 0 ? (
 					<ul>
 						{results.map((result: Accident, index) => (
 							<li
 								key={index}
-								className="result-box"
+								className="mb-4 rounded-lg border bg-slate-200 p-4 shadow-md"
 								onClick={() => toggleExpand(index)}
 								style={{ cursor: "pointer" }}
 							>
-								<p>
+								<p className="mx-1">
 									<strong>Date:</strong> {result.collision_date}
 									<br />
 									<strong>Location:</strong> {result.location.city},{" "}
@@ -341,157 +340,167 @@ const AccidentQueryPage = () => {
 
 								{/* Conditionally render more details if this item is expanded */}
 								{expanded === index && (
-									<div className="expanded-details">
-										<h3>Location Details</h3>
-										<p>
+									<div className="mt-3 border-l-4 border-slate-400 pl-3">
+										<h3 className="mb-3 text-lg">Location Details</h3>
+										<p className="mx-1">
 											<strong>Primary Road:</strong>{" "}
 											{result.location.primary_rd}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Secondary Road:</strong>{" "}
 											{result.location.secondary_rd}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>City:</strong> {result.location.city}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>County:</strong> {result.location.county}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Point X:</strong> {result.location.point_x}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Point Y:</strong> {result.location.point_y}
 										</p>
 
-										<h3>Severity Details</h3>
-										<p>
+										<h3 className="mb-3 text-lg">Severity Details</h3>
+										<p className="mx-1">
 											<strong>Collision Severity:</strong>{" "}
 											{result.severity.collision_severity}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Number Killed:</strong>{" "}
 											{result.severity.number_killed}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Number Injured:</strong>{" "}
 											{result.severity.number_injured}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Severe Injuries:</strong>{" "}
 											{result.severity.count_severe_inj}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Visible Injuries:</strong>{" "}
 											{result.severity.count_visible_inj}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Complaint of Pain Injuries:</strong>{" "}
 											{result.severity.count_complaint_pain}
 										</p>
 
-										<h3>Accident Details</h3>
-										<p>
+										<h3 className="mb-3 text-lg">Accident Details</h3>
+										<p className="mx-1">
 											<strong>Accident Year:</strong> {result.accident_year}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Collision Time:</strong> {result.collision_time}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Type of Collision:</strong>{" "}
 											{result.type_of_collision}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Hit and Run:</strong>{" "}
 											{result.hit_and_run === "Y" ? "Yes" : "No"}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Pedestrian Involved:</strong>{" "}
 											{result.pedestrian_accident === "Y" ? "Yes" : "No"}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Bicycle Involved:</strong>{" "}
 											{result.bicycle_accident === "Y" ? "Yes" : "No"}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Motorcycle Involved:</strong>{" "}
 											{result.motorcycle_accident === "Y" ? "Yes" : "No"}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Truck Involved:</strong>{" "}
 											{result.truck_accident === "Y" ? "Yes" : "No"}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Alcohol Involved:</strong>{" "}
 											{result.alcohol_involved === "Y" ? "Yes" : "No"}
 										</p>
 
-										<h3>Environment Details</h3>
-										<p>
+										<h3 className="mb-3 text-lg">Environment Details</h3>
+										<p className="mx-1">
 											<strong>Weather 1:</strong> {result.environment.weather_1}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Weather 2:</strong> {result.environment.weather_2}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Road Surface:</strong>{" "}
 											{result.environment.road_surface}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>Lighting:</strong> {result.environment.lighting}
 										</p>
-										<p>
+										<p className="mx-1">
 											<strong>State Highway Indicator:</strong>{" "}
 											{result.environment.state_hwy_ind}
 										</p>
 
-										<h3>Party Details</h3>
+										<h3 className="mb-3 text-lg">Party Details</h3>
 										{result.parties && result.parties.length > 0 ? (
 											result.parties.map((party: Party, idx: number) => (
-												<div key={idx}>
-													<p>
+												<div
+													key={idx}
+													className="mt-3 border-l-4 border-slate-200 pl-3"
+												>
+													<p className="mx-1">
 														<strong>Party Number:</strong> {party.party_number}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Party Type:</strong> {party.party_type}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>At Fault:</strong>{" "}
 														{party.at_fault === "Y" ? "Yes" : "No"}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Party Age:</strong> {party.party_age}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Party Sex:</strong> {party.party_sex}
 													</p>
 												</div>
 											))
 										) : (
-											<p>No party data available for this accident.</p>
+											<p className="mx-1">
+												No party data available for this accident.
+											</p>
 										)}
 
-										<h3>Victim Details</h3>
+										<h3 className="mb-3 text-lg">Victim Details</h3>
 										{result.victims && result.victims.length > 0 ? (
 											result.victims.map((victim, idx: number) => (
-												<div key={idx}>
-													<p>
+												<div
+													key={idx}
+													className="mt-3 border-l-4 border-slate-200 pl-3"
+												>
+													<p className="mx-1">
 														<strong>Victim Role:</strong> {victim.victim_role}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Victim Age:</strong> {victim.victim_age}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Victim Sex:</strong> {victim.victim_sex}
 													</p>
-													<p>
+													<p className="mx-1">
 														<strong>Degree of Injury:</strong>{" "}
 														{victim.victim_degree_of_injury}
 													</p>
 												</div>
 											))
 										) : (
-											<p>No victim data available for this accident.</p>
+											<p className="mx-1">
+												No victim data available for this accident.
+											</p>
 										)}
 									</div>
 								)}
@@ -499,7 +508,9 @@ const AccidentQueryPage = () => {
 						))}
 					</ul>
 				) : (
-					!loading && <p>No results found for the specified query.</p>
+					!loading && (
+						<p className="mx-1">No results found for the specified query.</p>
+					)
 				)}
 			</div>
 		</div>
