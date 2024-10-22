@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Switch from '../components/Switch';
 
 interface Location {
 	primary_rd: string;
@@ -90,6 +91,8 @@ interface Accident {
 	alcohol_involved: string;
 }
 
+
+
 // List of Southern California counties
 const southernCaliforniaCounties = [
 	"San Luis Obispo",
@@ -141,6 +144,13 @@ const generateDays = () => {
 };
 
 const AccidentQueryPage = () => {
+	// State for Switches
+	const [isAlcoholToggled, setAlcoholIsToggled] = useState(false);
+	const [isMotorcycleToggled, setMotorcycleIsToggled] = useState(false);
+	const [isRaceToggled, setRaceIsToggled] = useState(false);
+	const [isFatalToggled, setFatalIsToggled] = useState(false);
+	const [isSingleVehicleToggled, setSingleVehicleIsToggled] = useState(false);
+
 	// State for date selections
 	const [startYear, setStartYear] = useState("2018");
 	const [startMonth, setStartMonth] = useState("01");
@@ -166,7 +176,6 @@ const AccidentQueryPage = () => {
 	// Function to handle form submission
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		setLoading(true);
 		setError(""); // Reset error
 
 		const startDate = buildDate(startYear, startMonth, startDay);
@@ -175,7 +184,11 @@ const AccidentQueryPage = () => {
 		// Construct the base query URL
 		const queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
 		console.log("Query URL:", queryUrl);
-
+		if (county == ""){
+			setError("Please Select a county...")
+		}
+		else{
+		setLoading(true);
 		try {
 			const response = await fetch(queryUrl);
 
@@ -198,6 +211,7 @@ const AccidentQueryPage = () => {
 		} finally {
 			setLoading(false); // Stop loading spinner
 		}
+	}
 	};
 
 	// Function to toggle expansion of a specific data point
@@ -207,12 +221,18 @@ const AccidentQueryPage = () => {
 
 	return (
 		<div>
-			<h1>Accident Query Form</h1>
+			<div className="h-20 items-center justify-center">
+			<h1 className="border-gray-300 text-center font-semibold ">Welcome to Calsafe!</h1>
+			<h4 className="text-center text-md font-normal text-gray-500">Enter details below to get started</h4>
+
+			</div>
 			<form onSubmit={handleSubmit}>
 				{/* Start Date */}
-				<div>
-					<label>Start Date:</label>
+				<p className="mx-10 font-mono font-semibold">Accident Date Range</p>
+				<div className=" flex items-center font-mono">
+					<label className="w-20">Start Date:</label>
 					<select
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						value={startYear}
 						onChange={(e) => setStartYear(e.target.value)}
 					>
@@ -223,6 +243,7 @@ const AccidentQueryPage = () => {
 						))}
 					</select>
 					<select
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						value={startMonth}
 						onChange={(e) => setStartMonth(e.target.value)}
 					>
@@ -246,6 +267,7 @@ const AccidentQueryPage = () => {
 						))}
 					</select>
 					<select
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						value={startDay}
 						onChange={(e) => setStartDay(e.target.value)}
 					>
@@ -258,16 +280,20 @@ const AccidentQueryPage = () => {
 				</div>
 
 				{/* End Date */}
-				<div>
-					<label>End Date:</label>
-					<select value={endYear} onChange={(e) => setEndYear(e.target.value)}>
-						{[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
-							<option key={year} value={year}>
-								{year}
-							</option>
-						))}
+				<div className="flex items-center font-mono">
+					<label className="w-20 ">End Date:</label>
+					<select 
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						value={endYear} 
+						onChange={(e) => setEndYear(e.target.value)}>
+							{[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
+								<option key={year} value={year}>
+									{year}
+								</option>
+							))}
 					</select>
 					<select
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						value={endMonth}
 						onChange={(e) => setEndMonth(e.target.value)}
 					>
@@ -290,28 +316,58 @@ const AccidentQueryPage = () => {
 							</option>
 						))}
 					</select>
-					<select value={endDay} onChange={(e) => setEndDay(e.target.value)}>
-						{[...Array(31)].map((_, i) => (
-							<option key={i + 1} value={String(i + 1).padStart(2, "0")}>
-								{i + 1}
-							</option>
-						))}
+					<select 
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						value={endDay} 
+						onChange={(e) => setEndDay(e.target.value)}>
+							{[...Array(31)].map((_, i) => (
+								<option key={i + 1} value={String(i + 1).padStart(2, "0")}>
+									{i + 1}
+								</option>
+							))}
 					</select>
 				</div>
 
 				{/* County */}
-				<div>
-					<label>County:</label>
-					<select value={county} onChange={(e) => setCounty(e.target.value)}>
-						<option value="">Select a county</option>
-						{southernCaliforniaCounties.map((countyName) => (
-							<option key={countyName} value={countyName}>
-								{countyName}
-							</option>
-						))}
+				<div className="flex items-center font-mono">
+					<label className="w-20">County:</label>
+					<select 
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						value={county} 
+						onChange={(e) => setCounty(e.target.value)}>
+							<option value="">Select a county</option>
+							{southernCaliforniaCounties.map((countyName) => (
+								<option key={countyName} value={countyName}>
+									{countyName}
+								</option>
+							))}
 					</select>
+				
 				</div>
-				<button type="submit">Search</button>
+				<div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isAlcoholToggled} onToggle={() => setAlcoholIsToggled(!isAlcoholToggled)}></Switch>
+						<h2>Alcohol Involved</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isMotorcycleToggled} onToggle={() => setMotorcycleIsToggled(!isMotorcycleToggled)}></Switch>
+						<h2>Motorcycle Accident</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isRaceToggled} onToggle={() => setRaceIsToggled(!isRaceToggled)}></Switch>
+						<h2>Racing</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isFatalToggled} onToggle={() => setFatalIsToggled(!isFatalToggled)}></Switch>
+						<h2>Fatalities</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isSingleVehicleToggled} onToggle={() => setSingleVehicleIsToggled(!isSingleVehicleToggled)}></Switch>
+						<h2>Single Vehicle</h2>
+					</div>
+				</div>
+
+				<button className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"type="submit">Search</button>
 			</form>
 
 			{loading && <p>Loading...</p>}
@@ -324,7 +380,7 @@ const AccidentQueryPage = () => {
 						{results.map((result: Accident, index) => (
 							<li
 								key={index}
-								className="mb-4 rounded-lg border bg-slate-200 p-4 shadow-md"
+								className="mb-4 rounded-lg border bg-gray-800 p-4 shadow-md"
 								onClick={() => toggleExpand(index)}
 								style={{ cursor: "pointer" }}
 							>
