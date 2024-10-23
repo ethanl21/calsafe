@@ -133,7 +133,6 @@ class AccidentSerializer(serializers.ModelSerializer):
             'truck_accident',
             'mviw',
             'alcohol_involved',
-            'pcf_viol_category',
             'day_of_week',
         ]
 

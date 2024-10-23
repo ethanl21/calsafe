@@ -66,7 +66,6 @@ class Accident(models.Model):
     truck_accident = models.CharField(max_length=1, null=True)
     mviw = models.CharField(max_length=1, null=True)
     alcohol_involved = models.CharField(max_length=1, null=True)
-    pcf_viol_category = models.CharField(max_length=2, null=True)
     day_of_week = models.CharField(max_length=1, null=True)
 
     class Meta:
@@ -75,7 +74,7 @@ class Accident(models.Model):
 
 class Party(models.Model):
     party_id = models.AutoField(primary_key=True)
-    case = models.ForeignKey(Accident, on_delete=models.CASCADE, db_column='case_id')
+    case = models.ForeignKey(Accident, on_delete=models.CASCADE, db_column='case_id', related_name='parties')
     party_number = models.IntegerField()
     party_type = models.CharField(max_length=1, null=True)
     at_fault = models.CharField(max_length=1, null=True)
@@ -100,7 +99,7 @@ class Party(models.Model):
 
 class Victim(models.Model):
     victim_id = models.AutoField(primary_key=True)
-    case = models.ForeignKey(Accident, on_delete=models.CASCADE, db_column='case_id')
+    case = models.ForeignKey(Accident, on_delete=models.CASCADE, db_column='case_id', related_name='victims')
     party = models.ForeignKey(Party, on_delete=models.CASCADE, db_column='party_id')
     victim_role = models.CharField(max_length=1, null=True)
     victim_sex = models.CharField(max_length=1, null=True)
