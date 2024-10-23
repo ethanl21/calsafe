@@ -147,9 +147,9 @@ const AccidentQueryPage = () => {
 	// State for Switches
 	const [isAlcoholToggled, setAlcoholIsToggled] = useState(false);
 	const [isMotorcycleToggled, setMotorcycleIsToggled] = useState(false);
-	const [isRaceToggled, setRaceIsToggled] = useState(false);
+	const [isHitnRunToggled, setHitnRunIsToggled] = useState(false);
 	const [isFatalToggled, setFatalIsToggled] = useState(false);
-	const [isSingleVehicleToggled, setSingleVehicleIsToggled] = useState(false);
+	const [isBicycleToggled, setBicycleIsToggled] = useState(false);
 
 	// State for date selections
 	const [startYear, setStartYear] = useState("2018");
@@ -181,8 +181,29 @@ const AccidentQueryPage = () => {
 		const startDate = buildDate(startYear, startMonth, startDay);
 		const endDate = buildDate(endYear, endMonth, endDay);
 
+		
 		// Construct the base query URL
-		const queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
+		let queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
+		
+		if(isFatalToggled){
+			queryUrl = queryUrl.concat("&collision_severity=1")
+		}
+
+		if(isHitnRunToggled){
+			queryUrl = queryUrl.concat("&hit_and_run=M,F")
+		}
+
+		if(isAlcoholToggled){
+			queryUrl = queryUrl.concat("&alcohol_involved=Y")
+		}
+
+		if(isMotorcycleToggled){
+			queryUrl= queryUrl.concat("&motorcycle_accident=Y")
+		}
+
+		if(isBicycleToggled){
+			queryUrl = queryUrl.concat("&bicycle_accident=Y")
+		}
 		console.log("Query URL:", queryUrl);
 		if (county == ""){
 			setError("Please Select a county...")
@@ -226,7 +247,9 @@ const AccidentQueryPage = () => {
 			<h4 className="text-center text-md font-normal text-gray-500">Enter details below to get started</h4>
 
 			</div>
-			<form onSubmit={handleSubmit}>
+			<div className="flex">
+				
+			<form onSubmit={handleSubmit} className="w-1/3">
 				{/* Start Date */}
 				<p className="mx-10 font-mono font-semibold">Accident Date Range</p>
 				<div className=" flex items-center font-mono">
@@ -354,21 +377,23 @@ const AccidentQueryPage = () => {
 						<h2>Motorcycle Accident</h2>
 					</div>
 					<div className="flex space-x-4">
-						<Switch isToggled={isRaceToggled} onToggle={() => setRaceIsToggled(!isRaceToggled)}></Switch>
-						<h2>Racing</h2>
+						<Switch isToggled={isHitnRunToggled} onToggle={() => setHitnRunIsToggled(!isHitnRunToggled)}></Switch>
+						<h2>Hit and Run</h2>
 					</div>
 					<div className="flex space-x-4">
 						<Switch isToggled={isFatalToggled} onToggle={() => setFatalIsToggled(!isFatalToggled)}></Switch>
 						<h2>Fatalities</h2>
 					</div>
 					<div className="flex space-x-4">
-						<Switch isToggled={isSingleVehicleToggled} onToggle={() => setSingleVehicleIsToggled(!isSingleVehicleToggled)}></Switch>
-						<h2>Single Vehicle</h2>
+						<Switch isToggled={isBicycleToggled} onToggle={() => setBicycleIsToggled(!isBicycleToggled)}></Switch>
+						<h2>Bycicle Involved</h2>
 					</div>
 				</div>
-
+				
 				<button className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"type="submit">Search</button>
 			</form>
+			
+			</div>
 
 			{loading && <p>Loading...</p>}
 			{error && <p style={{ color: "red" }}>{error}</p>}
@@ -458,7 +483,7 @@ const AccidentQueryPage = () => {
 										</p>
 										<p className="mx-1">
 											<strong>Hit and Run:</strong>{" "}
-											{result.hit_and_run === "Y" ? "Yes" : "No"}
+											{result.hit_and_run === "M" ? "Misdemeanor" : result.hit_and_run === "F" ? "Felony" : "No"}
 										</p>
 										<p className="mx-1">
 											<strong>Pedestrian Involved:</strong>{" "}
