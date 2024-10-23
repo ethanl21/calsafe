@@ -120,7 +120,8 @@ def accident_list(request):
     if party_count:
         queryset = queryset.filter(party_count__gte=party_count)
     if hit_and_run:
-        queryset = queryset.filter(hit_and_run__iexact=hit_and_run)
+        hit_and_run_list = hit_and_run.split(',')
+        queryset = queryset.filter(hit_and_run__in=hit_and_run_list).distinct()
     if type_of_collision:
         queryset = queryset.filter(type_of_collision__icontains=type_of_collision)
     if pedestrian_accident:
