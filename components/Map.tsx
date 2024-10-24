@@ -29,7 +29,7 @@ const AccidentMap = () => {
 
 	useEffect(() => {
 		fetch(
-			"http://localhost:8000/api/accidents/?start_date=2021-12-01&end_date=2021-12-31&county=Orange",
+			"http://localhost:8000/api/accidents/?start_date=2021-01-01&end_date=2021-12-31&county=Orange",
 		)
 			.then((response) => response.json())
 			.then((data) => {
