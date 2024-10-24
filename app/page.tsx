@@ -150,6 +150,9 @@ const AccidentQueryPage = () => {
 	const [isHitnRunToggled, setHitnRunIsToggled] = useState(false);
 	const [isFatalToggled, setFatalIsToggled] = useState(false);
 	const [isBicycleToggled, setBicycleIsToggled] = useState(false);
+	const [isTruckToggled, setTruckIsToggled] = useState(false);
+	const [isHighwayToggled, setHighwayIsToggled] = useState(false);
+	
 
 	// State for date selections
 	const [startYear, setStartYear] = useState("2018");
@@ -204,6 +207,15 @@ const AccidentQueryPage = () => {
 		if(isBicycleToggled){
 			queryUrl = queryUrl.concat("&bicycle_accident=Y")
 		}
+
+		if(isTruckToggled){
+			queryUrl = queryUrl.concat("&truck_accident=Y")
+		}
+
+		if(isHighwayToggled){
+			queryUrl = queryUrl.concat("&state_hwy_ind=Y")
+		}
+
 		console.log("Query URL:", queryUrl);
 		if (county == ""){
 			setError("Please Select a county...")
@@ -386,7 +398,15 @@ const AccidentQueryPage = () => {
 					</div>
 					<div className="flex space-x-4">
 						<Switch isToggled={isBicycleToggled} onToggle={() => setBicycleIsToggled(!isBicycleToggled)}></Switch>
-						<h2>Bycicle Involved</h2>
+						<h2>Bicycle Involved</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isTruckToggled} onToggle={() => setTruckIsToggled(!isTruckToggled)}></Switch>
+						<h2>Truck Involved</h2>
+					</div>
+					<div className="flex space-x-4">
+						<Switch isToggled={isHighwayToggled} onToggle={() => setHighwayIsToggled(!isHighwayToggled)}></Switch>
+						<h2>State Highway</h2>
 					</div>
 				</div>
 				
