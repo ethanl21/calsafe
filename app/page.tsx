@@ -436,7 +436,9 @@ const AccidentQueryPage = () => {
 									{result.location.county}
 									<br />
 									<strong>Severity:</strong>{" "}
-									{result.severity.collision_severity}
+									{result.severity.collision_severity == "1" ? "Fatal" : result.severity.collision_severity == "2" ? "Severe Injury" : 
+											result.severity.collision_severity == "3" ? "Minor/Visible Injury" : 
+											result.severity.collision_severity == "4" ? "Complaint of Pain" : "Property Damage Only"}
 								</p>
 
 								{/* Conditionally render more details if this item is expanded */}
@@ -467,7 +469,10 @@ const AccidentQueryPage = () => {
 										<h3 className="mb-3 text-lg">Severity Details</h3>
 										<p className="mx-1">
 											<strong>Collision Severity:</strong>{" "}
-											{result.severity.collision_severity}
+											{result.severity.collision_severity == "1" ? "Fatal" :
+											 	result.severity.collision_severity == "2" ? "Severe Injury" : 
+												result.severity.collision_severity == "3" ? "Minor/Visible Injury" : 
+												result.severity.collision_severity == "4" ? "Complaint of Pain" : "Property Damage Only"}
 										</p>
 										<p className="mx-1">
 											<strong>Number Killed:</strong>{" "}
@@ -499,7 +504,12 @@ const AccidentQueryPage = () => {
 										</p>
 										<p className="mx-1">
 											<strong>Type of Collision:</strong>{" "}
-											{result.type_of_collision}
+											{result.type_of_collision === "A" ? "Head-On" : result.type_of_collision === "B" ? "Sideswipe" : 
+												result.type_of_collision === "C" ? "Rear-End" :
+												result.type_of_collision === "D" ? "Broadside" :
+												result.type_of_collision === "E" ? "Hit Object" : 
+												result.type_of_collision === "F" ? "Roll-Over" : 
+												result.type_of_collision === "G" ? "Vehicle/Pedestrian" : "Other or Not Stated"}
 										</p>
 										<p className="mx-1">
 											<strong>Hit and Run:</strong>{" "}
@@ -521,6 +531,10 @@ const AccidentQueryPage = () => {
 											<strong>Truck Involved:</strong>{" "}
 											{result.truck_accident === "Y" ? "Yes" : "No"}
 										</p>
+										<p className="mx-1"></p>
+											<strong>Bicycle Involved:</strong>{" "}
+											{result.bicycle_accident === "Y" ? "Yes" : "No"}
+										<br />
 										<p className="mx-1">
 											<strong>Alcohol Involved:</strong>{" "}
 											{result.alcohol_involved === "Y" ? "Yes" : "No"}
@@ -528,17 +542,33 @@ const AccidentQueryPage = () => {
 
 										<h3 className="mb-3 text-lg">Environment Details</h3>
 										<p className="mx-1">
-											<strong>Weather 1:</strong> {result.environment.weather_1}
-										</p>
-										<p className="mx-1">
-											<strong>Weather 2:</strong> {result.environment.weather_2}
+											<strong>Weather:</strong> {result.environment.weather_1 == "A" ? "Clear" :
+												result.environment.weather_1 == "C" ? "Raining" : 
+												result.environment.weather_1 == "E" ? "Fog" : 
+												result.environment.weather_1 == "D" ? "Snowing" : "Other"}
 										</p>
 										<p className="mx-1">
 											<strong>Road Surface:</strong>{" "}
-											{result.environment.road_surface}
+											{result.environment.road_surface == "A" ? "Dry" : 
+												result.environment.road_surface == "B" ? "Wet" : 
+												result.environment.road_surface == "C" ? "Snowy or Icy" :
+												result.environment.road_surface == "D" ? "Slippery (Muddy, Oily, etc.)" : "Not Stated"}
 										</p>
+										<p className="mx-1"></p>
+											<strong>Road Conditions:</strong> {result.environment.road_cond_1 == "A" ? "Potholes" : 
+												result.environment.road_cond_1 == "B" ? "Loose Materials on Road" : 
+												result.environment.road_cond_1 == "C" ? "Obstruction on Road" : 
+												result.environment.road_cond_1 == "D" ? "Construction Zone" : 
+												result.environment.road_cond_1 == "E" ? "Reduced Width" :
+												result.environment.road_cond_1 == "F" ? "Flooded" : 
+												result.environment.road_cond_1 == "H" ? "No Unsual Conditions" : "Other/Not Stated"}
+										<br />
 										<p className="mx-1">
-											<strong>Lighting:</strong> {result.environment.lighting}
+											<strong>Lighting:</strong> {result.environment.lighting == "A" ? "Daylight" : 
+												result.environment.lighting == "B" ? "Dawn/Dusk" : 
+												result.environment.lighting == "C" ? "Dark w/ Street Lamps" :
+												result.environment.lighting == "D" ? "Dark w/o Street Lamps" : 
+												result.environment.lighting == "E" ? "Dark w/ Inoperable Lamps" : "Not Stated"}
 										</p>
 										<p className="mx-1">
 											<strong>State Highway Indicator:</strong>{" "}
