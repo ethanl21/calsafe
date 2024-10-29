@@ -106,6 +106,271 @@ const southernCaliforniaCounties = [
 	"Imperial",
 ];
 
+const citiesSanLuisObispo =[
+	"Arroyo Grande",
+	"Atascadero",
+	"Grover Beach",
+	"Morro Bay",
+	"Paso Robles",
+	"Pismo beach",
+	"San Luis Obispo",
+	"Unincorporated",
+
+];
+
+const citiesKern =[
+	"Arvin",
+	"Bakersfield",
+	"Bear Valley",
+	"California City",
+	"Delano",
+	"McFarland",
+	"Ridgecrest",
+	"Shafter",
+	"Stallion Springs",
+	"Taft",
+	"Tehachapi",
+	"Unincorporated",
+];
+
+const citiesSanBernardino=[
+	"Adelanto",
+	"Apple Valley",
+	"Barstow",
+	"Big Bear Lake",
+	"Chino Hills",
+	"Chino",
+	"Colton",
+	"Fontana",
+	"Grand Terrace",
+	"Hesperia",
+	"Highland",
+	"Loma Linda",
+	"Montclair",
+	"Needles",
+	"Ontario",
+	"Rancho Cucamonga",
+	"Redlands",
+	"Rialto",
+	"San Bernandino",
+	"Twentynine Palms",
+	"Upland",
+	"Victorville",
+	"Yucaipa",
+	"Yucca Valley",
+	"Unincorporated",
+];
+
+const citiesVentura=[
+	"Camarillo",
+	"Fillmore",
+	"Moorpark",
+	"Ojai",
+	"Oxnard",
+	"Port Hueneme",
+	"Santa Paula",
+	"Simi Valley",
+	"Thousand Oaks",
+	"Ventura",
+	"Unincorporated",
+];
+
+const citiesLosAngeles=[
+	"Agoura Hills",
+	"Alhambra",
+	"Arcadia",
+	"Artesia",
+	"Avalon",
+	"Azusa",
+	"Baldwin Park",
+	"Bell",
+	"Bell Gardens",
+	"Bellflower",
+	"Beverly Hills",
+	"Bradbury",
+	"Burbank",
+	"Calabasas",
+	"Carson",
+	"Cerritos",
+	"Claremont",
+	"Commerce",
+	"Compton",
+	"Covina",
+	"Cudahy",
+	"Culver City",
+	"Diamond Bar",
+	"Downey",
+	"Duarte",
+	"El Monte",
+	"El Segundo",
+	"Gardena",
+	"Glendale",
+	"Glendora",
+	"Hawaiian Gardens",
+	"Hawthorne",
+	"Hermosa Beach",
+	"Hidden Hills",
+	"Huntington Park",
+	"Industry",
+	"Inglewood",
+	"Irwindale",
+	"La Canada Flintridge",
+	"La Habra Heights",
+	"La Mirada",
+	"La Puente",
+	"La Verne",
+	"Lakewood",
+	"Lancater",
+	"Lawndale",
+	"Lomita",
+	"Long Beach",
+	"Los Angeles",
+	"Lynwood",
+	"Malibu",
+	"Manhattan Beach",
+	"Maywood",
+	"Monrovia",
+	"Montebello",
+	"Monterey Park",
+	"Norwalk",
+	"Palmdale",
+	"Palos Verdes Estates",
+	"Paramount",
+	"Pasadena",
+	"Pico Rivera",
+	"Pomona",
+	"Rancho Palos Verdes",
+	"Redondo Beach",
+	"Rolling Hills",
+	"Rolling Hills Estates",
+	"Rosemead",
+	"San Dimas",
+	"San Fernando",
+	"San Gabriel",
+	"San Marino",
+	"Santa Clarita",
+	"Santa Fe Springs",
+	"Santa Monica",
+	"Sierra Madre",
+	"Signal Hill",
+	"South El Monte",
+	"South Gate",
+	"South Pasadena",
+	"Temple City",
+	"Torrance",
+	"Vernon",
+	"Walnut",
+	"West Covina",
+	"West Hollywood",
+	"Westlake Village",
+	"Whittier",
+	"Unincorporated",
+];
+
+const citiesOrange=[
+	"Aliso Viejo",
+	"Anaheim",
+	"Brea",
+	"Buena Park",
+	"Costa Mesa",
+	"Cypress",
+	"Dana Point",
+	"Fountain Valley",
+	"Fullerton",
+	"Garden Grove",
+	"Huntington Beach",
+	"Irvine",
+	"La Habra",
+	"La Palma",
+	"Laguna Beach",
+	"Laguna Hills",
+	"laguna Niguel",
+	"Laguna Woods",
+	"Lake Forest",
+	"Los Alamitos",
+	"Mission Viejo",
+	"Newport Beach",
+	"Orange",
+	"Placentia",
+	"Rancho Santa Margarita",
+	"San Clemente",
+	"San Juan Capistrano",
+	"Santa Ana",
+	"Seal Beach",
+	"Stanton",
+	"Tustin",
+	"Villa Park",
+	"Westminster",
+	"Yorba Linda",
+	"Unincorporated",
+
+];
+
+const citiesRiverside=[
+	"Banning",
+	"Beaumont",
+	"Blythe",
+	"Calimesa",
+	"Canyon Lake",
+	"Cathedral City",
+	"Coachella",
+	"Corona",
+	"Desert Hot Springs",
+	"Eastvale",
+	"Hemet",
+	"Indian Wells",
+	"Indio",
+	"Jurupa Valley",
+	"La Quinta",
+	"Lake Elsinore",
+	"Menifee",
+	"Moreno Valley",
+	"Murrieta",
+	"Norco",
+	"Palm Dessert",
+	"Palm Springs",
+	"Perris",
+	"Rancho Mirage",
+	"Riverside",
+	"San Jacinto",
+	"Temecula",
+	"Wildomar",
+	"Unincorporated",
+];
+
+const citiesSanDiego=[
+	"Carlsbad",
+	"Chula Vista",
+	"Coronado",
+	"Del Mar",
+	"El Cajon",
+	"Encinitas",
+	"Escondido",
+	"Imperial Beach",
+	"La Mesa",
+	"Lemon Grove",
+	"National City",
+	"Oceanside",
+	"Poway",
+	"San Diego",
+	"San Marcos",
+	"Santee",
+	"Solana Beach",
+	"Vista",
+	"Unincorporated",
+];
+
+const citiesImperial=[
+	"Brawley",
+	"Calexico",
+	"Calipatria",
+	"El Centro",
+	"Holtville",
+	"Imperial",
+	"Westmorland",
+	"Unincorporated",
+];
+
 // Helper functions to generate year, month, and day options
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const generateYears = () => {
@@ -163,8 +428,9 @@ const AccidentQueryPage = () => {
 	const [endMonth, setEndMonth] = useState("12");
 	const [endDay, setEndDay] = useState("31");
 
-	// State for county
+	// State for county & city
 	const [county, setCounty] = useState("");
+	const [city, setCity] = useState("");
 	const [results, setResults] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
@@ -187,7 +453,11 @@ const AccidentQueryPage = () => {
 		
 		// Construct the base query URL
 		let queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
-		
+		if(city != ""){
+			queryUrl = queryUrl.concat('&city=')
+			queryUrl = queryUrl.concat(city)
+		}
+
 		if(isFatalToggled){
 			queryUrl = queryUrl.concat("&collision_severity=1")
 		}
@@ -261,7 +531,7 @@ const AccidentQueryPage = () => {
 			</div>
 			<div className="flex">
 				
-			<form onSubmit={handleSubmit} className="w-1/3">
+			<form onSubmit={handleSubmit} className="w-1/2">
 				{/* Start Date */}
 				<p className="mx-10 font-mono font-semibold">Accident Date Range</p>
 				<div className=" flex items-center font-mono">
@@ -367,9 +637,9 @@ const AccidentQueryPage = () => {
 				<div className="flex items-center font-mono">
 					<label className="w-20">County:</label>
 					<select 
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
 						value={county} 
-						onChange={(e) => setCounty(e.target.value)}>
+						onChange={(e) => {setCounty(e.target.value); setCity("")}}>
 							<option value="">Select a county</option>
 							{southernCaliforniaCounties.map((countyName) => (
 								<option key={countyName} value={countyName}>
@@ -378,6 +648,70 @@ const AccidentQueryPage = () => {
 							))}
 					</select>
 				
+				</div>
+				<div className="flex items-center font-mono">
+					<label className="w-20">City:</label>
+					<select
+					className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+					value={city}
+					onChange={(e) => setCity(e.target.value)}>
+						<option value="">All</option>
+						{county == "" ? "No County Selected..." : 
+						county == "San Luis Obispo" ? citiesSanLuisObispo.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+						)) :
+						county == "Kern" ? citiesKern.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "San Bernardino" ? citiesSanBernardino.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "Ventura" ? citiesVentura.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "Los Angeles" ? citiesLosAngeles.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) :
+						county == "Orange" ? citiesOrange.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "Riverside" ? citiesRiverside.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "San Diego" ? citiesSanDiego.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : 
+						county == "Imperial" ? citiesImperial.map((cityName) => (
+							<option key={cityName} value={cityName}>
+								{cityName}
+							</option> 
+
+						)) : ""}
+
+					</select>
 				</div>
 				<div>
 					<div className="flex space-x-4">
@@ -410,7 +744,7 @@ const AccidentQueryPage = () => {
 					</div>
 				</div>
 				
-				<button className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"type="submit">Search</button>
+				<button className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"type="submit">Search</button>
 			</form>
 			
 			</div>
@@ -421,7 +755,7 @@ const AccidentQueryPage = () => {
 			<div className="flex flex-col gap-5">
 				<h2>Results:</h2>
 				{results.length > 0 ? (
-					<ul>
+					<ul className="list-none">
 						{results.map((result: Accident, index) => (
 							<li
 								key={index}
