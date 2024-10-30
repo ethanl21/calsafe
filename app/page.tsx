@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import Switch from '../components/Switch';
+import Switch from "../components/Switch";
 
 interface Location {
 	primary_rd: string;
@@ -91,8 +91,6 @@ interface Accident {
 	alcohol_involved: string;
 }
 
-
-
 // List of Southern California counties
 const southernCaliforniaCounties = [
 	"San Luis Obispo",
@@ -106,7 +104,7 @@ const southernCaliforniaCounties = [
 	"Imperial",
 ];
 
-const citiesSanLuisObispo =[
+const citiesSanLuisObispo = [
 	"Arroyo Grande",
 	"Atascadero",
 	"Grover Beach",
@@ -115,10 +113,9 @@ const citiesSanLuisObispo =[
 	"Pismo beach",
 	"San Luis Obispo",
 	"Unincorporated",
-
 ];
 
-const citiesKern =[
+const citiesKern = [
 	"Arvin",
 	"Bakersfield",
 	"Bear Valley",
@@ -133,7 +130,7 @@ const citiesKern =[
 	"Unincorporated",
 ];
 
-const citiesSanBernardino=[
+const citiesSanBernardino = [
 	"Adelanto",
 	"Apple Valley",
 	"Barstow",
@@ -161,7 +158,7 @@ const citiesSanBernardino=[
 	"Unincorporated",
 ];
 
-const citiesVentura=[
+const citiesVentura = [
 	"Camarillo",
 	"Fillmore",
 	"Moorpark",
@@ -175,7 +172,7 @@ const citiesVentura=[
 	"Unincorporated",
 ];
 
-const citiesLosAngeles=[
+const citiesLosAngeles = [
 	"Agoura Hills",
 	"Alhambra",
 	"Arcadia",
@@ -267,7 +264,7 @@ const citiesLosAngeles=[
 	"Unincorporated",
 ];
 
-const citiesOrange=[
+const citiesOrange = [
 	"Aliso Viejo",
 	"Anaheim",
 	"Brea",
@@ -303,10 +300,9 @@ const citiesOrange=[
 	"Westminster",
 	"Yorba Linda",
 	"Unincorporated",
-
 ];
 
-const citiesRiverside=[
+const citiesRiverside = [
 	"Banning",
 	"Beaumont",
 	"Blythe",
@@ -338,7 +334,7 @@ const citiesRiverside=[
 	"Unincorporated",
 ];
 
-const citiesSanDiego=[
+const citiesSanDiego = [
 	"Carlsbad",
 	"Chula Vista",
 	"Coronado",
@@ -360,7 +356,7 @@ const citiesSanDiego=[
 	"Unincorporated",
 ];
 
-const citiesImperial=[
+const citiesImperial = [
 	"Brawley",
 	"Calexico",
 	"Calipatria",
@@ -417,7 +413,6 @@ const AccidentQueryPage = () => {
 	const [isBicycleToggled, setBicycleIsToggled] = useState(false);
 	const [isTruckToggled, setTruckIsToggled] = useState(false);
 	const [isHighwayToggled, setHighwayIsToggled] = useState(false);
-	
 
 	// State for date selections
 	const [startYear, setStartYear] = useState("2018");
@@ -450,71 +445,69 @@ const AccidentQueryPage = () => {
 		const startDate = buildDate(startYear, startMonth, startDay);
 		const endDate = buildDate(endYear, endMonth, endDay);
 
-		
 		// Construct the base query URL
 		let queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
-		if(city != ""){
-			queryUrl = queryUrl.concat('&city=')
-			queryUrl = queryUrl.concat(city)
+		if (city != "") {
+			queryUrl = queryUrl.concat("&city=");
+			queryUrl = queryUrl.concat(city);
 		}
 
-		if(isFatalToggled){
-			queryUrl = queryUrl.concat("&collision_severity=1")
+		if (isFatalToggled) {
+			queryUrl = queryUrl.concat("&collision_severity=1");
 		}
 
-		if(isHitnRunToggled){
-			queryUrl = queryUrl.concat("&hit_and_run=M,F")
+		if (isHitnRunToggled) {
+			queryUrl = queryUrl.concat("&hit_and_run=M,F");
 		}
 
-		if(isAlcoholToggled){
-			queryUrl = queryUrl.concat("&alcohol_involved=Y")
+		if (isAlcoholToggled) {
+			queryUrl = queryUrl.concat("&alcohol_involved=Y");
 		}
 
-		if(isMotorcycleToggled){
-			queryUrl= queryUrl.concat("&motorcycle_accident=Y")
+		if (isMotorcycleToggled) {
+			queryUrl = queryUrl.concat("&motorcycle_accident=Y");
 		}
 
-		if(isBicycleToggled){
-			queryUrl = queryUrl.concat("&bicycle_accident=Y")
+		if (isBicycleToggled) {
+			queryUrl = queryUrl.concat("&bicycle_accident=Y");
 		}
 
-		if(isTruckToggled){
-			queryUrl = queryUrl.concat("&truck_accident=Y")
+		if (isTruckToggled) {
+			queryUrl = queryUrl.concat("&truck_accident=Y");
 		}
 
-		if(isHighwayToggled){
-			queryUrl = queryUrl.concat("&state_hwy_ind=Y")
+		if (isHighwayToggled) {
+			queryUrl = queryUrl.concat("&state_hwy_ind=Y");
 		}
 
 		console.log("Query URL:", queryUrl);
-		if (county == ""){
-			setError("Please Select a county...")
-		}
-		else{
-		setLoading(true);
-		try {
-			const response = await fetch(queryUrl);
+		if (county == "") {
+			setError("Please Select a county...");
+		} else {
+			setLoading(true);
+			try {
+				const response = await fetch(queryUrl);
 
-			// Handle 404 errors
-			if (response.status === 404) {
-				setError("No accident data found for the specified query.");
-				setResults([]);
-				return;
+				// Handle 404 errors
+				if (response.status === 404) {
+					setError("No accident data found for the specified query.");
+					setResults([]);
+					return;
+				}
+
+				if (!response.ok) {
+					throw new Error(`Error: ${response.statusText}`);
+				}
+
+				const data = await response.json();
+				setResults(data);
+			} catch (err) {
+				setError("An error occurred while fetching the data.");
+				console.error("Fetch error:", err);
+			} finally {
+				setLoading(false); // Stop loading spinner
 			}
-
-			if (!response.ok) {
-				throw new Error(`Error: ${response.statusText}`);
-			}
-
-			const data = await response.json();
-			setResults(data);
-		} catch (err) {
-			setError("An error occurred while fetching the data.");
-			console.error("Fetch error:", err);
-		} finally {
-			setLoading(false); // Stop loading spinner
 		}
-	}
 	};
 
 	// Function to toggle expansion of a specific data point
@@ -525,228 +518,263 @@ const AccidentQueryPage = () => {
 	return (
 		<div>
 			<div className="h-20 items-center justify-center">
-			<h1 className="border-gray-300 text-center font-semibold ">Welcome to Calsafe!</h1>
-			<h4 className="text-center text-md font-normal text-gray-500">Enter details below to get started</h4>
-
+				<h1 className="border-gray-300 text-center font-semibold">
+					Welcome to Calsafe!
+				</h1>
+				<h4 className="text-center text-base font-normal text-gray-500">
+					Enter details below to get started
+				</h4>
 			</div>
 			<div className="flex">
-				
-			<form onSubmit={handleSubmit} className="w-1/2">
-				{/* Start Date */}
-				<p className="mx-10 font-mono font-semibold">Accident Date Range</p>
-				<div className=" flex items-center font-mono">
-					<label className="w-20">Start Date:</label>
-					<select
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={startYear}
-						onChange={(e) => setStartYear(e.target.value)}
-					>
-						{[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
-							<option key={year} value={year}>
-								{year}
-							</option>
-						))}
-					</select>
-					<select
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={startMonth}
-						onChange={(e) => setStartMonth(e.target.value)}
-					>
-						{[
-							"01",
-							"02",
-							"03",
-							"04",
-							"05",
-							"06",
-							"07",
-							"08",
-							"09",
-							"10",
-							"11",
-							"12",
-						].map((month) => (
-							<option key={month} value={month}>
-								{month}
-							</option>
-						))}
-					</select>
-					<select
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={startDay}
-						onChange={(e) => setStartDay(e.target.value)}
-					>
-						{[...Array(31)].map((_, i) => (
-							<option key={i + 1} value={String(i + 1).padStart(2, "0")}>
-								{i + 1}
-							</option>
-						))}
-					</select>
-				</div>
-
-				{/* End Date */}
-				<div className="flex items-center font-mono">
-					<label className="w-20 ">End Date:</label>
-					<select 
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={endYear} 
-						onChange={(e) => setEndYear(e.target.value)}>
+				<form onSubmit={handleSubmit} className="w-1/2">
+					{/* Start Date */}
+					<p className="mx-10 font-mono font-semibold">Accident Date Range</p>
+					<div className="flex items-center font-mono">
+						<label className="w-20">Start Date:</label>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={startYear}
+							onChange={(e) => setStartYear(e.target.value)}
+						>
 							{[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
 								<option key={year} value={year}>
 									{year}
 								</option>
 							))}
-					</select>
-					<select
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={endMonth}
-						onChange={(e) => setEndMonth(e.target.value)}
-					>
-						{[
-							"01",
-							"02",
-							"03",
-							"04",
-							"05",
-							"06",
-							"07",
-							"08",
-							"09",
-							"10",
-							"11",
-							"12",
-						].map((month) => (
-							<option key={month} value={month}>
-								{month}
-							</option>
-						))}
-					</select>
-					<select 
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-13 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={endDay} 
-						onChange={(e) => setEndDay(e.target.value)}>
+						</select>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={startMonth}
+							onChange={(e) => setStartMonth(e.target.value)}
+						>
+							{[
+								"01",
+								"02",
+								"03",
+								"04",
+								"05",
+								"06",
+								"07",
+								"08",
+								"09",
+								"10",
+								"11",
+								"12",
+							].map((month) => (
+								<option key={month} value={month}>
+									{month}
+								</option>
+							))}
+						</select>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={startDay}
+							onChange={(e) => setStartDay(e.target.value)}
+						>
 							{[...Array(31)].map((_, i) => (
 								<option key={i + 1} value={String(i + 1).padStart(2, "0")}>
 									{i + 1}
 								</option>
 							))}
-					</select>
-				</div>
+						</select>
+					</div>
 
-				{/* County */}
-				<div className="flex items-center font-mono">
-					<label className="w-20">County:</label>
-					<select 
-						className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-						value={county} 
-						onChange={(e) => {setCounty(e.target.value); setCity("")}}>
+					{/* End Date */}
+					<div className="flex items-center font-mono">
+						<label className="w-20">End Date:</label>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={endYear}
+							onChange={(e) => setEndYear(e.target.value)}
+						>
+							{[2018, 2019, 2020, 2021, 2022, 2023].map((year) => (
+								<option key={year} value={year}>
+									{year}
+								</option>
+							))}
+						</select>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={endMonth}
+							onChange={(e) => setEndMonth(e.target.value)}
+						>
+							{[
+								"01",
+								"02",
+								"03",
+								"04",
+								"05",
+								"06",
+								"07",
+								"08",
+								"09",
+								"10",
+								"11",
+								"12",
+							].map((month) => (
+								<option key={month} value={month}>
+									{month}
+								</option>
+							))}
+						</select>
+						<select
+							className="block w-12 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={endDay}
+							onChange={(e) => setEndDay(e.target.value)}
+						>
+							{[...Array(31)].map((_, i) => (
+								<option key={i + 1} value={String(i + 1).padStart(2, "0")}>
+									{i + 1}
+								</option>
+							))}
+						</select>
+					</div>
+
+					{/* County */}
+					<div className="flex items-center font-mono">
+						<label className="w-20">County:</label>
+						<select
+							className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={county}
+							onChange={(e) => {
+								setCounty(e.target.value);
+								setCity("");
+							}}
+						>
 							<option value="">Select a county</option>
 							{southernCaliforniaCounties.map((countyName) => (
 								<option key={countyName} value={countyName}>
 									{countyName}
 								</option>
 							))}
-					</select>
-				
-				</div>
-				<div className="flex items-center font-mono">
-					<label className="w-20">City:</label>
-					<select
-					className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-48 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-					value={city}
-					onChange={(e) => setCity(e.target.value)}>
-						<option value="">All</option>
-						{county == "" ? "No County Selected..." : 
-						county == "San Luis Obispo" ? citiesSanLuisObispo.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-						)) :
-						county == "Kern" ? citiesKern.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "San Bernardino" ? citiesSanBernardino.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "Ventura" ? citiesVentura.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "Los Angeles" ? citiesLosAngeles.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) :
-						county == "Orange" ? citiesOrange.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "Riverside" ? citiesRiverside.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "San Diego" ? citiesSanDiego.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : 
-						county == "Imperial" ? citiesImperial.map((cityName) => (
-							<option key={cityName} value={cityName}>
-								{cityName}
-							</option> 
-
-						)) : ""}
-
-					</select>
-				</div>
-				<div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isAlcoholToggled} onToggle={() => setAlcoholIsToggled(!isAlcoholToggled)}></Switch>
-						<h2>Alcohol Involved</h2>
+						</select>
 					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isMotorcycleToggled} onToggle={() => setMotorcycleIsToggled(!isMotorcycleToggled)}></Switch>
-						<h2>Motorcycle Accident</h2>
+					<div className="flex items-center font-mono">
+						<label className="w-20">City:</label>
+						<select
+							className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+							value={city}
+							onChange={(e) => setCity(e.target.value)}
+						>
+							<option value="">All</option>
+							{county == ""
+								? "No County Selected..."
+								: county == "San Luis Obispo"
+									? citiesSanLuisObispo.map((cityName) => (
+											<option key={cityName} value={cityName}>
+												{cityName}
+											</option>
+										))
+									: county == "Kern"
+										? citiesKern.map((cityName) => (
+												<option key={cityName} value={cityName}>
+													{cityName}
+												</option>
+											))
+										: county == "San Bernardino"
+											? citiesSanBernardino.map((cityName) => (
+													<option key={cityName} value={cityName}>
+														{cityName}
+													</option>
+												))
+											: county == "Ventura"
+												? citiesVentura.map((cityName) => (
+														<option key={cityName} value={cityName}>
+															{cityName}
+														</option>
+													))
+												: county == "Los Angeles"
+													? citiesLosAngeles.map((cityName) => (
+															<option key={cityName} value={cityName}>
+																{cityName}
+															</option>
+														))
+													: county == "Orange"
+														? citiesOrange.map((cityName) => (
+																<option key={cityName} value={cityName}>
+																	{cityName}
+																</option>
+															))
+														: county == "Riverside"
+															? citiesRiverside.map((cityName) => (
+																	<option key={cityName} value={cityName}>
+																		{cityName}
+																	</option>
+																))
+															: county == "San Diego"
+																? citiesSanDiego.map((cityName) => (
+																		<option key={cityName} value={cityName}>
+																			{cityName}
+																		</option>
+																	))
+																: county == "Imperial"
+																	? citiesImperial.map((cityName) => (
+																			<option key={cityName} value={cityName}>
+																				{cityName}
+																			</option>
+																		))
+																	: ""}
+						</select>
 					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isHitnRunToggled} onToggle={() => setHitnRunIsToggled(!isHitnRunToggled)}></Switch>
-						<h2>Hit and Run</h2>
+					<div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isAlcoholToggled}
+								onToggle={() => setAlcoholIsToggled(!isAlcoholToggled)}
+							></Switch>
+							<h2>Alcohol Involved</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isMotorcycleToggled}
+								onToggle={() => setMotorcycleIsToggled(!isMotorcycleToggled)}
+							></Switch>
+							<h2>Motorcycle Accident</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isHitnRunToggled}
+								onToggle={() => setHitnRunIsToggled(!isHitnRunToggled)}
+							></Switch>
+							<h2>Hit and Run</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isFatalToggled}
+								onToggle={() => setFatalIsToggled(!isFatalToggled)}
+							></Switch>
+							<h2>Fatalities</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isBicycleToggled}
+								onToggle={() => setBicycleIsToggled(!isBicycleToggled)}
+							></Switch>
+							<h2>Bicycle Involved</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isTruckToggled}
+								onToggle={() => setTruckIsToggled(!isTruckToggled)}
+							></Switch>
+							<h2>Truck Involved</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isHighwayToggled}
+								onToggle={() => setHighwayIsToggled(!isHighwayToggled)}
+							></Switch>
+							<h2>State Highway</h2>
+						</div>
 					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isFatalToggled} onToggle={() => setFatalIsToggled(!isFatalToggled)}></Switch>
-						<h2>Fatalities</h2>
-					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isBicycleToggled} onToggle={() => setBicycleIsToggled(!isBicycleToggled)}></Switch>
-						<h2>Bicycle Involved</h2>
-					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isTruckToggled} onToggle={() => setTruckIsToggled(!isTruckToggled)}></Switch>
-						<h2>Truck Involved</h2>
-					</div>
-					<div className="flex space-x-4">
-						<Switch isToggled={isHighwayToggled} onToggle={() => setHighwayIsToggled(!isHighwayToggled)}></Switch>
-						<h2>State Highway</h2>
-					</div>
-				</div>
-				
-				<button className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-96 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"type="submit">Search</button>
-			</form>
-			
+
+					<button
+						className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+						type="submit"
+					>
+						Search
+					</button>
+				</form>
 			</div>
 
 			{loading && <p>Loading...</p>}
@@ -770,9 +798,15 @@ const AccidentQueryPage = () => {
 									{result.location.county}
 									<br />
 									<strong>Severity:</strong>{" "}
-									{result.severity.collision_severity == "1" ? "Fatal" : result.severity.collision_severity == "2" ? "Severe Injury" : 
-											result.severity.collision_severity == "3" ? "Minor/Visible Injury" : 
-											result.severity.collision_severity == "4" ? "Complaint of Pain" : "Property Damage Only"}
+									{result.severity.collision_severity == "1"
+										? "Fatal"
+										: result.severity.collision_severity == "2"
+											? "Severe Injury"
+											: result.severity.collision_severity == "3"
+												? "Minor/Visible Injury"
+												: result.severity.collision_severity == "4"
+													? "Complaint of Pain"
+													: "Property Damage Only"}
 								</p>
 
 								{/* Conditionally render more details if this item is expanded */}
@@ -799,14 +833,18 @@ const AccidentQueryPage = () => {
 										<p className="mx-1">
 											<strong>Point Y:</strong> {result.location.point_y}
 										</p>
-
 										<h3 className="mb-3 text-lg">Severity Details</h3>
 										<p className="mx-1">
 											<strong>Collision Severity:</strong>{" "}
-											{result.severity.collision_severity == "1" ? "Fatal" :
-											 	result.severity.collision_severity == "2" ? "Severe Injury" : 
-												result.severity.collision_severity == "3" ? "Minor/Visible Injury" : 
-												result.severity.collision_severity == "4" ? "Complaint of Pain" : "Property Damage Only"}
+											{result.severity.collision_severity == "1"
+												? "Fatal"
+												: result.severity.collision_severity == "2"
+													? "Severe Injury"
+													: result.severity.collision_severity == "3"
+														? "Minor/Visible Injury"
+														: result.severity.collision_severity == "4"
+															? "Complaint of Pain"
+															: "Property Damage Only"}
 										</p>
 										<p className="mx-1">
 											<strong>Number Killed:</strong>{" "}
@@ -828,7 +866,6 @@ const AccidentQueryPage = () => {
 											<strong>Complaint of Pain Injuries:</strong>{" "}
 											{result.severity.count_complaint_pain}
 										</p>
-
 										<h3 className="mb-3 text-lg">Accident Details</h3>
 										<p className="mx-1">
 											<strong>Accident Year:</strong> {result.accident_year}
@@ -838,16 +875,29 @@ const AccidentQueryPage = () => {
 										</p>
 										<p className="mx-1">
 											<strong>Type of Collision:</strong>{" "}
-											{result.type_of_collision === "A" ? "Head-On" : result.type_of_collision === "B" ? "Sideswipe" : 
-												result.type_of_collision === "C" ? "Rear-End" :
-												result.type_of_collision === "D" ? "Broadside" :
-												result.type_of_collision === "E" ? "Hit Object" : 
-												result.type_of_collision === "F" ? "Roll-Over" : 
-												result.type_of_collision === "G" ? "Vehicle/Pedestrian" : "Other or Not Stated"}
+											{result.type_of_collision === "A"
+												? "Head-On"
+												: result.type_of_collision === "B"
+													? "Sideswipe"
+													: result.type_of_collision === "C"
+														? "Rear-End"
+														: result.type_of_collision === "D"
+															? "Broadside"
+															: result.type_of_collision === "E"
+																? "Hit Object"
+																: result.type_of_collision === "F"
+																	? "Roll-Over"
+																	: result.type_of_collision === "G"
+																		? "Vehicle/Pedestrian"
+																		: "Other or Not Stated"}
 										</p>
 										<p className="mx-1">
 											<strong>Hit and Run:</strong>{" "}
-											{result.hit_and_run === "M" ? "Misdemeanor" : result.hit_and_run === "F" ? "Felony" : "No"}
+											{result.hit_and_run === "M"
+												? "Misdemeanor"
+												: result.hit_and_run === "F"
+													? "Felony"
+													: "No"}
 										</p>
 										<p className="mx-1">
 											<strong>Pedestrian Involved:</strong>{" "}
@@ -866,49 +916,74 @@ const AccidentQueryPage = () => {
 											{result.truck_accident === "Y" ? "Yes" : "No"}
 										</p>
 										<p className="mx-1"></p>
-											<strong>Bicycle Involved:</strong>{" "}
-											{result.bicycle_accident === "Y" ? "Yes" : "No"}
+										<strong>Bicycle Involved:</strong>{" "}
+										{result.bicycle_accident === "Y" ? "Yes" : "No"}
 										<br />
 										<p className="mx-1">
 											<strong>Alcohol Involved:</strong>{" "}
 											{result.alcohol_involved === "Y" ? "Yes" : "No"}
 										</p>
-
 										<h3 className="mb-3 text-lg">Environment Details</h3>
 										<p className="mx-1">
-											<strong>Weather:</strong> {result.environment.weather_1 == "A" ? "Clear" :
-												result.environment.weather_1 == "C" ? "Raining" : 
-												result.environment.weather_1 == "E" ? "Fog" : 
-												result.environment.weather_1 == "D" ? "Snowing" : "Other"}
+											<strong>Weather:</strong>{" "}
+											{result.environment.weather_1 == "A"
+												? "Clear"
+												: result.environment.weather_1 == "C"
+													? "Raining"
+													: result.environment.weather_1 == "E"
+														? "Fog"
+														: result.environment.weather_1 == "D"
+															? "Snowing"
+															: "Other"}
 										</p>
 										<p className="mx-1">
 											<strong>Road Surface:</strong>{" "}
-											{result.environment.road_surface == "A" ? "Dry" : 
-												result.environment.road_surface == "B" ? "Wet" : 
-												result.environment.road_surface == "C" ? "Snowy or Icy" :
-												result.environment.road_surface == "D" ? "Slippery (Muddy, Oily, etc.)" : "Not Stated"}
+											{result.environment.road_surface == "A"
+												? "Dry"
+												: result.environment.road_surface == "B"
+													? "Wet"
+													: result.environment.road_surface == "C"
+														? "Snowy or Icy"
+														: result.environment.road_surface == "D"
+															? "Slippery (Muddy, Oily, etc.)"
+															: "Not Stated"}
 										</p>
 										<p className="mx-1"></p>
-											<strong>Road Conditions:</strong> {result.environment.road_cond_1 == "A" ? "Potholes" : 
-												result.environment.road_cond_1 == "B" ? "Loose Materials on Road" : 
-												result.environment.road_cond_1 == "C" ? "Obstruction on Road" : 
-												result.environment.road_cond_1 == "D" ? "Construction Zone" : 
-												result.environment.road_cond_1 == "E" ? "Reduced Width" :
-												result.environment.road_cond_1 == "F" ? "Flooded" : 
-												result.environment.road_cond_1 == "H" ? "No Unsual Conditions" : "Other/Not Stated"}
+										<strong>Road Conditions:</strong>{" "}
+										{result.environment.road_cond_1 == "A"
+											? "Potholes"
+											: result.environment.road_cond_1 == "B"
+												? "Loose Materials on Road"
+												: result.environment.road_cond_1 == "C"
+													? "Obstruction on Road"
+													: result.environment.road_cond_1 == "D"
+														? "Construction Zone"
+														: result.environment.road_cond_1 == "E"
+															? "Reduced Width"
+															: result.environment.road_cond_1 == "F"
+																? "Flooded"
+																: result.environment.road_cond_1 == "H"
+																	? "No Unsual Conditions"
+																	: "Other/Not Stated"}
 										<br />
 										<p className="mx-1">
-											<strong>Lighting:</strong> {result.environment.lighting == "A" ? "Daylight" : 
-												result.environment.lighting == "B" ? "Dawn/Dusk" : 
-												result.environment.lighting == "C" ? "Dark w/ Street Lamps" :
-												result.environment.lighting == "D" ? "Dark w/o Street Lamps" : 
-												result.environment.lighting == "E" ? "Dark w/ Inoperable Lamps" : "Not Stated"}
+											<strong>Lighting:</strong>{" "}
+											{result.environment.lighting == "A"
+												? "Daylight"
+												: result.environment.lighting == "B"
+													? "Dawn/Dusk"
+													: result.environment.lighting == "C"
+														? "Dark w/ Street Lamps"
+														: result.environment.lighting == "D"
+															? "Dark w/o Street Lamps"
+															: result.environment.lighting == "E"
+																? "Dark w/ Inoperable Lamps"
+																: "Not Stated"}
 										</p>
 										<p className="mx-1">
 											<strong>State Highway Indicator:</strong>{" "}
 											{result.environment.state_hwy_ind}
 										</p>
-
 										<h3 className="mb-3 text-lg">Party Details</h3>
 										{result.parties && result.parties.length > 0 ? (
 											result.parties.map((party: Party, idx: number) => (
@@ -939,7 +1014,6 @@ const AccidentQueryPage = () => {
 												No party data available for this accident.
 											</p>
 										)}
-
 										<h3 className="mb-3 text-lg">Victim Details</h3>
 										{result.victims && result.victims.length > 0 ? (
 											result.victims.map((victim, idx: number) => (
