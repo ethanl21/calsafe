@@ -1,34 +1,26 @@
-// components/NavBar.tsx
+"use server";
 
-"use client";
+import { NavLink } from "@/components/nav-link";
+import {
+	NavigationMenu,
+	NavigationMenuList,
+} from "@/components/ui/navigation-menu";
 
-import Link from "next/link";
-
-const NavBar = () => {
+export const NavBar = () => {
 	return (
-		<nav className="bg-slate-700 p-2">
-			<ul className="m-0 flex list-none justify-around p-0">
-				<li className="my-2">
-					<Link href="/" className="font-bold text-white no-underline">
-						Query
-					</Link>
-				</li>
-				<li className="my-2">
-					<Link href="/map" className="font-bold text-white no-underline">
-						Map
-					</Link>
-				</li>
-				<li className="my-2">
-					<Link
-						href="/statistics"
-						className="font-bold text-white no-underline"
-					>
-						Statistics
-					</Link>
-				</li>
-			</ul>
-		</nav>
+		<header className="">
+			<div className="mx-auto w-fit rounded-md border-2">
+				<NavigationMenu>
+					<NavigationMenuList className="flex justify-between">
+						<NavLink href="/map">Map</NavLink>
+						<NavLink href="/statistics">Statistical Analysis</NavLink>
+						<NavLink href="">Prediction</NavLink>
+						<NavLink href="">Summary</NavLink>
+						<NavLink href="">Graphs</NavLink>
+						<NavLink href="">Tools</NavLink>
+					</NavigationMenuList>
+				</NavigationMenu>
+			</div>
+		</header>
 	);
 };
-
-export default NavBar;
