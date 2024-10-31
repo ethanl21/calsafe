@@ -2,7 +2,7 @@
 
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
-import { NavBar } from "@/components/NavBar";
+import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Footer } from "@/components/footer";
 import { PropsWithChildren } from "react";
@@ -22,7 +22,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 					enableSystem
 					disableTransitionOnChange
 				>
-					<NavBar />
+					<Header />
 					{children}
 					<Footer />
 				</ThemeProvider>

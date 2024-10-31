@@ -22,7 +22,7 @@ export const NavLink = ({ href, children }: NavLinkProps) => {
 				<NavigationMenuLink
 					className={clsx([
 						navigationMenuTriggerStyle(),
-						"text-xl",
+
 						{
 							"font-extrabold": pathname === href,
 						},
