@@ -3,6 +3,12 @@
 @tailwind utilities;
 
 @layer base {
+	:root,
+	body {
+		height: 100%;
+		max-height: 100vh;
+	}
+
 	:root {
 		--background: 0 0% 100%;
 		--foreground: 0 0% 3.9%;

@@ -15,7 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
 		<html lang="en">
-			<body>
+			<body className="flex flex-col">
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: PropsWithChildren) {
 					disableTransitionOnChange
 				>
 					<Header />
-					{children}
+					<main className="h-full grow">{children}</main>
 					<Footer />
 				</ThemeProvider>
 			</body>
