@@ -8,11 +8,10 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 L.Icon.Default.mergeOptions({
-    iconUrl: '/images/leaflet/marker-icon.png',
-    iconRetinaUrl: '/images/leaflet/marker-icon-2x.png',
-    shadowUrl: '/images/leaflet/marker-shadow.png'
+	iconUrl: "/images/leaflet/marker-icon.png",
+	iconRetinaUrl: "/images/leaflet/marker-icon-2x.png",
+	shadowUrl: "/images/leaflet/marker-shadow.png",
 });
-
 
 const AccidentMap = () => {
 	const [accidents, setAccidents] = useState([]);
