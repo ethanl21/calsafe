@@ -13,15 +13,76 @@ L.Icon.Default.mergeOptions({
 	shadowUrl: "/images/leaflet/marker-shadow.png",
 });
 
-const AccidentMap = () => {
-	const [accidents, setAccidents] = useState([]);
+const AccidentMap: React.FC = () => {
+
+	interface Location {
+		location_id: number;
+		primary_rd: string | null;
+		secondary_rd: string | null;
+		distance: number | null;
+		direction: string | null;
+		intersection: string | null;
+		city: string | null;
+		county: string | null;
+		point_x: number | null;
+		point_y: number | null;
+	}
+
+	interface Severity {
+		severity_id: number;
+		collision_severity: string | null;
+		number_killed: number | null;
+		number_injured: number | null;
+		count_severe_inj: number | null;
+		count_visible_inj: number | null;
+		count_complaint_pain: number | null;
+		count_ped_killed: number | null;
+		count_ped_injured: number | null;
+		count_bicyclist_killed: number | null;
+		count_bicyclist_injured: number | null;
+		count_mc_killed: number | null;
+		count_mc_injured: number | null;
+	}
+
+	interface Environment {
+		environment_id: number;
+		weather_1: string | null;
+		weather_2: string | null;
+		road_surface: string | null;
+		road_cond_1: string | null;
+		road_cond_2: string | null;
+		lighting: string | null;
+		state_hwy_ind: string | null;
+	}
+
+	interface Accident {
+		case_id: number;
+		accident_year: number;
+		collision_date: string;
+		collision_time: string | null;
+		location: Location;
+		severity: Severity;
+		environment: Environment;
+		party_count: number;
+		hit_and_run: string | null;
+		type_of_collision: string | null;
+		pedestrian_accident: string | null;
+		bicycle_accident: string | null;
+		motorcycle_accident: string | null;
+		truck_accident: string | null;
+		mviw: string | null;
+		alcohol_involved: string | null;
+		day_of_week: string | null;
+	}
+
+	const [accidents, setAccidents] = useState<Accident[]>([]);
 
 	useEffect(() => {
 		fetch(
 			"http://localhost:8000/api/accidents/?start_date=2021-11-01&end_date=2021-12-31&county=Orange",
 		)
 			.then((response) => response.json())
-			.then((data) => {
+			.then((data: Accident[]) => {
 				const validData = data
 					.filter(
 						(accident) =>
@@ -51,7 +112,7 @@ const AccidentMap = () => {
 			{accidents.map((accident, index) => (
 				<Marker
 					key={index}
-					position={[accident.location.point_y, accident.location.point_x]}
+					position={[accident.location.point_y!, accident.location.point_x!]}
 				>
 					<Popup>
 						<strong>Date:</strong>{" "}
