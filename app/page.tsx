@@ -42,6 +42,7 @@ interface Environment {
 }
 
 interface Party {
+	case_id: number;
 	party_number: number;
 	party_type: string;
 	at_fault: string;
@@ -62,6 +63,7 @@ interface Party {
 }
 
 interface Victim {
+	case_id: number;
 	victim_role: string;
 	victim_sex: string;
 	victim_age: number;
@@ -411,6 +413,7 @@ const AccidentQueryPage = () => {
 	const [isHitnRunToggled, setHitnRunIsToggled] = useState(false);
 	const [isFatalToggled, setFatalIsToggled] = useState(false);
 	const [isBicycleToggled, setBicycleIsToggled] = useState(false);
+	const [isPedestrianToggled, setPedestrianIsToggled] = useState(false);
 	const [isTruckToggled, setTruckIsToggled] = useState(false);
 	const [isHighwayToggled, setHighwayIsToggled] = useState(false);
 
@@ -429,6 +432,10 @@ const AccidentQueryPage = () => {
 	const [results, setResults] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
+
+	const [weather, setWeather] = useState("");
+	const [collisionType, setCollisionType] = useState("");
+	const [lighting, setLighting] = useState("");
 
 	// Track the expanded item
 	const [expanded, setExpanded] = useState<number | null>(null);
@@ -472,6 +479,10 @@ const AccidentQueryPage = () => {
 			queryUrl = queryUrl.concat("&bicycle_accident=Y");
 		}
 
+		if (isPedestrianToggled) {
+			queryUrl = queryUrl.concat("&pedestrian_accident=Y");
+		}
+
 		if (isTruckToggled) {
 			queryUrl = queryUrl.concat("&truck_accident=Y");
 		}
@@ -479,6 +490,11 @@ const AccidentQueryPage = () => {
 		if (isHighwayToggled) {
 			queryUrl = queryUrl.concat("&state_hwy_ind=Y");
 		}
+
+		if (weather !== "") queryUrl += `&weather_1=${weather}`;
+		if (collisionType !== "") queryUrl += `&type_of_collision=${collisionType}`;
+		if (lighting !== "") queryUrl += `&lighting=${lighting}`;
+
 
 		console.log("Query URL:", queryUrl);
 		if (county == "") {
@@ -716,6 +732,59 @@ const AccidentQueryPage = () => {
 																	: ""}
 						</select>
 					</div>
+					{/* Weather Selector */}
+					<div className="flex items-center font-mono">
+                        <label className="w-20">Weather:</label>
+                        <select
+                            className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            value={weather}
+                            onChange={(e) => setWeather(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="A">Clear</option>
+                            <option value="B">Cloudy</option>
+                            <option value="C">Raining</option>
+                            <option value="D">Snowing</option>
+                            <option value="E">Fog</option>
+                            <option value="F">Other</option>
+                            <option value="G">Wind</option>
+                        </select>
+                    </div>
+					{/* Lighting Selector */}
+					<div className="flex items-center font-mono">
+                        <label className="w-20">Lighting:</label>
+                        <select
+                            className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            value={lighting}
+                            onChange={(e) => setLighting(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="A">Daylight</option>
+                            <option value="B">Dusk/Dawn</option>
+                            <option value="C">Dark w/ Street Lights)</option>
+                            <option value="D">Dark w/o Steet Lights</option>
+                            <option value="E">Dark w/ Malfunctioning Lights</option>
+                        </select>
+                    </div>
+					{/* Collision Type Selector */}
+                    <div className="flex items-center font-mono">
+                        <label className="w-20">Collision Type:</label>
+                        <select
+                            className="block w-48 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
+                            value={collisionType}
+                            onChange={(e) => setCollisionType(e.target.value)}
+                        >
+                            <option value="">All</option>
+                            <option value="A">Head-On</option>
+                            <option value="B">Sideswipe</option>
+                            <option value="C">Rear End</option>
+                            <option value="D">Broadside</option>
+                            <option value="E">Hit Object</option>
+                            <option value="F">Overturned</option>
+                            <option value="G">Vehicle/Pedestrian</option>
+                            <option value="H">Other</option>
+                        </select>
+                    </div>
 					<div>
 						<div className="flex space-x-4">
 							<Switch
@@ -750,14 +819,21 @@ const AccidentQueryPage = () => {
 								isToggled={isBicycleToggled}
 								onToggle={() => setBicycleIsToggled(!isBicycleToggled)}
 							></Switch>
-							<h2>Bicycle Involved</h2>
+							<h2>Bicycle Accident</h2>
+						</div>
+						<div className="flex space-x-4">
+							<Switch
+								isToggled={isPedestrianToggled}
+								onToggle={() => setPedestrianIsToggled(!isPedestrianToggled)}
+							></Switch>
+							<h2>Pedestrian Accident</h2>
 						</div>
 						<div className="flex space-x-4">
 							<Switch
 								isToggled={isTruckToggled}
 								onToggle={() => setTruckIsToggled(!isTruckToggled)}
 							></Switch>
-							<h2>Truck Involved</h2>
+							<h2>Truck Accident</h2>
 						</div>
 						<div className="flex space-x-4">
 							<Switch
@@ -872,6 +948,10 @@ const AccidentQueryPage = () => {
 										</p>
 										<p className="mx-1">
 											<strong>Collision Time:</strong> {result.collision_time}
+										</p>
+										<p className="mx-1">
+											<strong>Case Number:</strong>{" "}
+											{result.case_id}
 										</p>
 										<p className="mx-1">
 											<strong>Type of Collision:</strong>{" "}
