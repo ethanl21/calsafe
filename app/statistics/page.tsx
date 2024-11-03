@@ -340,7 +340,6 @@ const StatisticsPage = () => {
 	// State for county & city
 	const [county, setCounty] = useState("");
 	const [city, setCity] = useState("");
-	const [results, setResults] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
