@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import { API_BASE_URL } from "../../config/config";
 
 // List of Southern California counties
 const southernCaliforniaCounties = [
@@ -358,7 +359,7 @@ const StatisticsPage = () => {
 		const endDate = buildDate(endYear, endMonth, endDay);
 	
 		// Construct the base query URL
-		let queryUrl = `http://localhost:8000/api/statistics/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
+		let queryUrl = `${API_BASE_URL}/api/statistics/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
 		if (city !== "") {
 			queryUrl = `${queryUrl}&city=${city}`;
 		}

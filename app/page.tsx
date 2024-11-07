@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import Switch from "../components/Switch";
+import { API_BASE_URL } from "../config/config";
 
 interface Location {
 	primary_rd: string;
@@ -453,7 +454,7 @@ const AccidentQueryPage = () => {
 		const endDate = buildDate(endYear, endMonth, endDay);
 
 		// Construct the base query URL
-		let queryUrl = `http://localhost:8000/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
+		let queryUrl = `${API_BASE_URL}/api/accidents/?start_date=${startDate}&end_date=${endDate}&county=${county}`;
 		if (city != "") {
 			queryUrl = queryUrl.concat("&city=");
 			queryUrl = queryUrl.concat(city);
