@@ -7,6 +7,8 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 L.Icon.Default.mergeOptions({
 	iconUrl: "/images/leaflet/marker-icon.png",
 	iconRetinaUrl: "/images/leaflet/marker-icon-2x.png",
@@ -79,7 +81,7 @@ const AccidentMap: React.FC = () => {
 
 	useEffect(() => {
 		fetch(
-			"http://localhost:8000/api/accidents/?start_date=2021-11-01&end_date=2021-12-31&county=Orange",
+			`${API_BASE_URL}/api/accidents/?start_date=2021-11-01&end_date=2021-12-31&county=Orange`
 		)
 			.then((response) => response.json())
 			.then((data: Accident[]) => {

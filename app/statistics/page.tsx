@@ -2,7 +2,8 @@
 "use client";
 
 import { useState } from "react";
-import { API_BASE_URL } from "../../config/config";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 // List of Southern California counties
 const southernCaliforniaCounties = [
