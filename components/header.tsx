@@ -5,12 +5,9 @@ import {
 	NavigationMenu,
 	NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { CircleHelp, Search } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { buttonVariants } from "@/components/ui/button";
-import Link from "next/link";
 
 export const Header = () => {
 	return (
@@ -31,23 +28,6 @@ export const Header = () => {
 						<Button size="icon">
 							<CircleHelp size={36} />
 						</Button>
-					</div>
-
-					<div className="flex gap-3">
-						{/* might need to extract this into a client component later */}
-						<div className="relative w-full">
-							<Input placeholder="Search"></Input>
-							<Search className="absolute inset-y-0 right-2 h-full opacity-50" />
-						</div>
-
-						<div className="flex gap-2">
-							<Link href="" className={buttonVariants({ variant: "default" })}>
-								Sign Up
-							</Link>
-							<Link href="" className={buttonVariants({ variant: "default" })}>
-								Log In
-							</Link>
-						</div>
 					</div>
 				</div>
 			</div>

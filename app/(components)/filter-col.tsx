@@ -9,7 +9,21 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-export const FilterCol = () => {
+interface Filters {
+	alcohol: boolean;
+	motorcycle: boolean;
+	hitAndRun: boolean;
+	fatal: boolean;
+	bicycleAccident: boolean;
+	pedestrianAccident: boolean;
+	truckAccident: boolean;
+	stateHighway: boolean;
+}
+interface FilterColProps {
+	filters: Filters;
+	setFilters: (filters: Filters) => void;
+}
+export const FilterCol = (props: FilterColProps) => {
 	return (
 		<>
 			<Card>
@@ -26,51 +40,78 @@ export const FilterCol = () => {
 							}}
 						>
 							<Label htmlFor="alcohol-toggle">Alcohol</Label>
-							<Switch id="alcohol-toggle"></Switch>
-
-							<Label htmlFor="fatal-toggle">Fatal</Label>
-							<Switch id="fatal-toggle"></Switch>
-
-							<Label htmlFor="distracted-driving-toggle">
-								Distracted Driving
-							</Label>
-							<Switch id="distracted-driving-toggle"></Switch>
-
-							<Label htmlFor="single-vehicle-toggle">Single Vehicle</Label>
-							<Switch id="single-vehicle-toggle"></Switch>
+							<Switch
+								id="alcohol-toggle"
+								checked={props.filters.alcohol}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, alcohol: e })
+								}
+							></Switch>
 
 							<Label htmlFor="motorcycle-toggle">Motorcycle</Label>
-							<Switch id="motorcycle-toggle"></Switch>
-
-							<Label htmlFor="injuries-toggle">Injuries</Label>
-							<Switch id="injuries-toggle"></Switch>
-
-							<Label htmlFor="no-injuries-toggle">No Injuries</Label>
-							<Switch id="no-injuries-toggle"></Switch>
-
-							<Label htmlFor="severe-injury-toggle">Severe Injury</Label>
-							<Switch id="severe-injury-toggle"></Switch>
-
-							<Label htmlFor="property-damage-toggle">Property Damage</Label>
-							<Switch id="property-damage-toggle"></Switch>
-
-							<Label htmlFor="drugs-toggle">Drugs</Label>
-							<Switch id="drugs-toggle"></Switch>
+							<Switch
+								id="motorcycle-toggle"
+								checked={props.filters.motorcycle}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, motorcycle: e })
+								}
+							></Switch>
 
 							<Label htmlFor="hit-and-run-toggle">Hit and Run</Label>
-							<Switch id="hit-and-run-toggle"></Switch>
+							<Switch
+								id="hit-and-run-toggle"
+								checked={props.filters.hitAndRun}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, hitAndRun: e })
+								}
+							></Switch>
 
-							<Label htmlFor="t-bone-toggle">T-Bone</Label>
-							<Switch id="t-bone-toggle"></Switch>
+							<Label htmlFor="fatal-toggle">Fatal</Label>
+							<Switch
+								id="fatal-toggle"
+								checked={props.filters.fatal}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, fatal: e })
+								}
+							></Switch>
 
-							<Label htmlFor="head-on-toggle">Head-on</Label>
-							<Switch id="head-on-toggle"></Switch>
+							<Label htmlFor="bicycle-accident-toggle">Bicycle Accident</Label>
+							<Switch
+								id="bicycle-accident-toggle"
+								checked={props.filters.bicycleAccident}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, bicycleAccident: e })
+								}
+							></Switch>
 
-							<Label htmlFor="rear-end-toggle">Rear-end</Label>
-							<Switch id="rear-end-toggle"></Switch>
+							<Label htmlFor="pedestrian-accident-toggle">
+								Pedestrian Accident
+							</Label>
+							<Switch
+								id="pedestrian-accident-toggle"
+								checked={props.filters.pedestrianAccident}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, pedestrianAccident: e })
+								}
+							></Switch>
 
-							<Label htmlFor="3-plus-vehicles-toggle">3+ Vehicles</Label>
-							<Switch id="3-plus-vehicles-toggle"></Switch>
+							<Label htmlFor="truck-accident-toggle">Truck Accident</Label>
+							<Switch
+								id="truck-accident-toggle"
+								checked={props.filters.truckAccident}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, truckAccident: e })
+								}
+							></Switch>
+
+							<Label htmlFor="state-highway-toggle">State Highway</Label>
+							<Switch
+								id="state-highway-toggle"
+								checked={props.filters.stateHighway}
+								onCheckedChange={(e) =>
+									props.setFilters({ ...props.filters, stateHighway: e })
+								}
+							></Switch>
 						</div>
 					</ScrollArea>
 				</CardContent>
