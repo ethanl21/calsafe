@@ -1,0 +1,122 @@
+export const safetyEquipMap: Record<string, string> = {
+	A: "None in Vehicle",
+	B: "Unknown",
+	C: "Lap Belt Used",
+	D: "Lap Belt Not Used",
+	E: "Shoulder Harness Used",
+	F: "Shoulder Harness Not Used",
+	G: "Lap/Shoulder Harness Used",
+	H: "Lap/Shoulder Harness Not Used",
+	J: "Passive Restraint Used",
+	K: "Passive Restraint Not Used",
+	L: "Air Bag Deployed",
+	M: "Air Bag Not Deployed",
+	N: "Other",
+	P: "Not Required",
+	Q: "Child Restraint in Vehicle Used",
+	R: "Child Restraint in Vehicle Not Used",
+	S: "Child Restraint in Vehicle, Use Unknown",
+	T: "Child Restraint in Vehicle, Improper Use",
+	U: "No Child Restraint in Vehicle",
+	V: "Driver, Motorcycle Helmet Not Used",
+	W: "Driver, Motorcycle Helmet Used",
+	X: "Passenger, Motorcycle Helmet Not Used",
+	Y: "Passenger, Motorcycle Helmet Used",
+	"": "Not Stated",
+};
+
+export const finanResponsMap: Record<string, string> = {
+	N: "No Proof of Insurance Obtained",
+	Y: "Yes, Proof of Insurance Obtained",
+	O: "Not Applicable",
+	E: "Called Away Before Obtaining Insurance",
+	"": "Not Stated",
+};
+
+export const partySobrietyMap: Record<string, string> = {
+	A: "Had Not Been Drinking",
+	B: "Had Been Drinking, Under Influence",
+	C: "Had Been Drinking, Not Under Influence",
+	D: "Had Been Drinking, Impairment Unknown",
+	G: "Impairment Unknown",
+	H: "Not Applicable",
+};
+
+export const partyDrugPhysicalMap: Record<string, string> = {
+	E: "Under Drug Influence",
+	F: "Impairment - Physical",
+	G: "Impairment Unknown",
+	H: "Not Applicable",
+	I: "Sleepy/Fatigued",
+	"": "Not Stated",
+};
+
+export const vehicleTypeMap: Record<string, string> = {
+	A: "Passenger Car/Station Wagon",
+	B: "Passenger Car with Trailer",
+	C: "Motorcycle/Scooter",
+	D: "Pickup or Panel Truck",
+	E: "Pickup or Panel Truck with Trailer",
+	F: "Truck or Truck Tractor",
+	G: "Truck or Truck Tractor with Trailer",
+	H: "Schoolbus",
+	I: "Other Bus",
+	J: "Emergency Vehicle",
+	K: "Highway Construction Equipment",
+	L: "Bicycle",
+	M: "Other Vehicle",
+	N: "Pedestrian",
+	O: "Moped",
+	"": "Not Stated",
+};
+
+export const inattentionMap: Record<string, string> = {
+	A: "Cell Phone Handheld (7/1/03)",
+	B: "Cell Phone Handsfree (7/1/03)",
+	C: "Electronic Equipment (1/1/01)",
+	D: "Radio/CD (1/1/01)",
+	E: "Smoking (1/1/01)",
+	F: "Eating (1/1/01)",
+	G: "Children (1/1/01)",
+	H: "Animal (1/1/01)",
+	I: "Personal Hygiene (1/1/01)",
+	J: "Reading (1/1/01)",
+	K: "Other (1/1/01)",
+	P: "Cell Phone (1/1/01, value prior to 7/03 form revision)",
+	"": "Not Stated",
+};
+
+export const movePreAccMap: Record<string, string> = {
+	A: "Stopped",
+	B: "Proceeding Straight",
+	C: "Ran Off Road",
+	D: "Making Right Turn",
+	E: "Making Left Turn",
+	F: "Making U-Turn",
+	G: "Backing",
+	H: "Slowing/Stopping",
+	I: "Passing Other Vehicle",
+	J: "Changing Lanes",
+	K: "Parking Maneuver",
+	L: "Entering Traffic",
+	M: "Other Unsafe Turning",
+	N: "Crossed Into Opposing Lane",
+	O: "Parked",
+	P: "Merging",
+	Q: "Traveling Wrong Way",
+	R: "Other",
+	S: "Lane Splitting",
+	"": "Not Stated",
+};
+
+export const victimDegreeMap: Record<string, string> = {
+	"1": "Fatal",
+	"2": "Severe Injury",
+	"3": "Minor/Visible Injury",
+	"4": "Complaint of Pain",
+	"5": "Suspected Serious Injury",
+	"6": "Suspected Minor Injury",
+	"7": "Possible Injury",
+	"0": "No Injury",
+	"": "Unknown",
+};

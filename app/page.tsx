@@ -11,137 +11,57 @@ import { useState } from "react";
 import locations from "./locations.json";
 import centroidData from "./centroidData.json";
 import dynamic from "next/dynamic";
+import {
+	Filters,
+	Conditions,
+	DEFAULT_FILTERS,
+	DEFAULT_CONDITIONS,
+} from "@/lib/types";
+import { DATA_START_DATE, DATA_END_DATE } from "@/lib/constants";
+import { getSearchParams } from "@/lib/api";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const Map = dynamic(() => import("../components/Map"), { ssr: false });
 
 export default function Page() {
 	const [city, setCity] = useState("");
 	const [county, setCounty] = useState("");
-	const [start_date, setStartDate] = useState(new Date("2018-01-01"));
-	const [end_date, setEndDate] = useState(new Date("2023-12-31"));
+	const [start_date, setStartDate] = useState(new Date(DATA_START_DATE));
+	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[] | undefined>();
 	const [predictions, setPredictions] = useState<Predictions[] | undefined>();
-	const [filters, setFilters] = useState({
-		alcohol: false,
-		motorcycle: false,
-		hitAndRun: false,
-		fatal: false,
-		bicycleAccident: false,
-		pedestrianAccident: false,
-		truckAccident: false,
-		stateHighway: false,
-		usePredictions: false
-	});
+	const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+	const [conditions, setConditions] = useState<Conditions>(DEFAULT_CONDITIONS);
 
-	const [conditions, setConditions] = useState({
-		weather: "",
-		lighting: "",
-		collisionType: "",
-		roadSurface: "",
-		roadCondition: "",
-	});
-	const getSearchParams = () => {
-		setPredictions(undefined)
-		const params = new URLSearchParams();
-		params.append("city", city);
-		params.append("county", county);
-		params.append("start_date", start_date.toISOString().slice(0, 10));
-		params.append("end_date", end_date.toISOString().slice(0, 10));
+	const handleSearch = () => {
+		setPredictions(undefined);
+		const params = getSearchParams(
+			filters,
+			conditions,
+			city,
+			county,
+			start_date,
+			end_date,
+		);
 
-		if (filters.fatal) {
-			params.append("collision_severity", "1");
-		}
-		if (filters.hitAndRun) {
-			params.append("hit_and_run", "M,F");
-		}
-		if (filters.alcohol) {
-			params.append("alcohol_involved", "Y");
-		}
-		if (filters.motorcycle) {
-			params.append("motorcycle_accident", "Y");
-		}
-		if (filters.bicycleAccident) {
-			params.append("bicycle_accident", "Y");
-		}
-		if (filters.pedestrianAccident) {
-			params.append("pedestrian_accident", "Y");
-		}
-		if (filters.truckAccident) {
-			params.append("truck_accident", "Y");
-		}
-		if (filters.stateHighway) {
-			params.append("state_hwy_ind", "Y");
-		}
-		if(filters.usePredictions && county != ""){
-			predictCounty(county)
+		if (filters.usePredictions && county !== "") {
+			const kind = county as keyof typeof centroidData;
+			setPredictions(centroidData[kind].Precision[4]);
 		}
 
-		if (conditions.weather && conditions.weather !== "all") {
-			params.append("weather_1", conditions.weather);
-		}
-		if (conditions.collisionType && conditions.collisionType !== "all") {
-			params.append("type_of_collision", conditions.collisionType);
-		}
-		if (conditions.lighting && conditions.lighting !== "all") {
-			params.append("lighting", conditions.lighting);
-		}
-		if (conditions.roadSurface && conditions.roadSurface !== "all") {
-			params.append("road_surface", conditions.roadSurface);
-		}
-
-		return params.toString();
+		fetch(`/api/accidents?${params}`)
+			.then((res) => {
+				if (!res.ok) throw new Error(res.statusText);
+				return res.json();
+			})
+			.then((data) => {
+				if (Array.isArray(data)) setAccidents(data);
+			})
+			.catch((err) => console.error("Error fetching accidents:", err));
 	};
-
-	const predictCounty = (county: any) =>{
-		const kind: keyof typeof centroidData = county
-			//Precision hard coded to 4
-			setPredictions(centroidData[kind].Precision[4])
-	}
-
-
 
 	const clearFilters = () => {
-		setFilters({
-			alcohol: false,
-			motorcycle: false,
-			hitAndRun: false,
-			fatal: false,
-			bicycleAccident: false,
-			pedestrianAccident: false,
-			truckAccident: false,
-			stateHighway: false,
-			usePredictions: false
-		});
-	};
-
-	const fetchAccidents = async () => {
-		const params = getSearchParams();
-		const url = `${API_BASE_URL}/api/accidents/?${params}`;
-	
-		console.log("Fetching accidents with URL:", url); // Debugging log
-	
-		try {
-			const res = await fetch(url);
-	
-			if (!res.ok) {
-				console.error("Failed to fetch accidents:", res.statusText);
-				return;
-			}
-	
-			const data = await res.json();
-	
-			if (!Array.isArray(data)) {
-				console.error("Unexpected response format:", data);
-				return;
-			}
-	
-			console.log("Fetched accidents:", data.length, "records"); // Debugging log
-			setAccidents(data);
-		} catch (error) {
-			console.error("Error fetching accidents:", error);
-		}
+		setFilters(DEFAULT_FILTERS);
 	};
 
 	const setCurrentLocation = (location: CountyAndCity) => {
@@ -157,17 +77,17 @@ export default function Page() {
 						filters={filters}
 						setFilters={setFilters}
 						clearFilters={clearFilters}
-						updateFilters={fetchAccidents}
+						updateFilters={handleSearch}
 					/>
 					<InfoCard
 						num_datapoints={accidents?.length || 0}
-						start_date={start_date} // Fixed
-						end_date={end_date} // Fixed
+						start_date={start_date}
+						end_date={end_date}
 					/>
 				</aside>
 
 				<div className="flex grow flex-col space-y-1">
-					<div className="h-full grow rounded-sm border-2 z-10">
+					<div className="z-10 h-full grow rounded-sm border-2">
 						<Map accidents={accidents} predictions={predictions} />
 					</div>
 					<div className="flex h-fit shrink space-x-2">

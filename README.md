@@ -1,32 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CalSafe
 
-## Getting Started
+Traffic accident visualization and analysis for Southern California. There is an interactive map with clustered crash markers, a paginated query view, aggregated statistics dashboards, and yearly trend charts. The data comes from the California Highway Patrol.
 
-To run the branch locally on localhost:3000, create an .env.local file and put this inside the file. NEXT_PUBLIC_API_BASE_URL=http://localhost:8000 The deployed version from github will be on calsafe.vercel.app
+## Data
 
-First, run the development server:
+Crash records come from the [California Crash Reporting System (CCRS)](https://data.ca.gov/dataset/ccrs), which updates daily. The app covers 10 Southern California counties (Imperial, Kern, Los Angeles, Orange, Riverside, San Bernardino, San Diego, San Luis Obispo, Santa Barbara, Ventura) for 2024-2026. Figures for 2026 are provisional and fill in as reports arrive. Raw CSVs are fetched at import time and never committed.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Stack
+
+The frontend is Next.js 14 (App Router) with React 18, TypeScript, Tailwind CSS and shadcn/ui. Leaflet renders the map on the client with marker clustering, Recharts draws the charts, and next-themes handles light/dark mode. Four route handlers under `app/api/` (`accidents`, `statistics`, `summary`, `summaryByCounty`) form the API, so there is no separate backend. Storage is libSQL/SQLite through `@libsql/client`, self-hosted with `sqld` in Docker; pointing the same client at a Turso cloud URL is all a cloud move would take. All calls are plain `fetch` against same-origin `/api/*` routes.
+
+## Project structure
+
+```
+app/                  # Pages: / (map), /query, /statistics, /graphs, /summary, /predictions (placeholder)
+app/api/              # API routes (accidents, statistics, summary, summaryByCounty)
+app/(components)/     # Page-level UI (filters, selectors, charts, yearly-charts)
+components/           # Shared UI (Map, header, footer, shadcn/ui)
+lib/                  # db.ts (libsql client), api.ts, types.ts, constants.ts (data window), chp-codes.ts, utils.ts
+scripts/              # setup-db.ts (schema), import-ccrs.ts (CCRS fetch + import)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The database is a normalized 6-table schema (`accidents`, `location`, `severity`, `environment`, `parties`, `victims`) holding only columns the UI actually reads.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Requires a reachable libSQL server (see Deployment, or point at any `libsql://` URL):
 
-## Learn More
+```bash
+npm install
+cp .env.example .env.local   # set LIBSQL_URL (e.g. http://<server-lan-ip>:8080)
+npm run dev                  # http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Import data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm run db:setup                                        # create tables (destructive)
+npm run db:import                                        # all years 2024-2026
+npm run db:import -- --years=2024 --limit=2000          # smoke test
+npm run db:import -- --years=2026 --batch=2000          # subset / tuning
+npm run db:import -- --redownload                       # re-fetch cached CSVs
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The importer downloads each yearly CSV once (cached outside the repo) and stream-parses it with a SoCal-county filter, then bulk-inserts in batches with progress output before backfilling per-accident flags. Each year's rows get wiped first, so a rerun never duplicates anything.
+
+## Deployment (self-hosted)
+
+```bash
+git clone <repo> /opt/calsafe && cd /opt/calsafe
+docker compose up -d db
+docker compose --profile tools run --rm importer scripts/setup-db.ts
+docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=2024,2025,2026
+docker compose up -d app
+```
+
+- App: `http://<server-lan-ip>:3000`; DB reachable at `<server-lan-ip>:8080` (LAN only; not exposed publicly).
+- Public URL: add an Nginx Proxy Manager host (`calsafe.<domain>` → `http://app:3000`, shared `proxy` network preferred) plus a Cloudflare A record on existing dynamic DNS.
+- Monthly refresh (current year only): cron `docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=$(date +\%Y)`.
+- Each January, add the new year's 3 CCRS URLs to `FILES` in `scripts/import-ccrs.ts`.
+
+## Environment variables
+
+| Variable | Purpose |
+| --- | --- |
+| `LIBSQL_URL` | libSQL server URL (`http://db:8080` in compose, `http://<lan-ip>:8080` for local dev, `libsql://…` for Turso cloud) |
+| `LIBSQL_AUTH_TOKEN` | Only if server auth is enabled (not needed by default) |

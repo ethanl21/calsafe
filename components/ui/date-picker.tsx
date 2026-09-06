@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { useEffect } from "react";
 import { nanoid } from "nanoid";
+import { DATA_START_YEAR, DATA_END_YEAR } from "@/lib/constants";
 
 // util
 const getAllMonths = () => {
@@ -64,14 +65,14 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
 	};
 
 	const isDateInRange = (date: Date): boolean => {
-		const minDate = new Date(2018, 0, 1); // January 1, 2018
-		const maxDate = new Date(2023, 11, 31); // December 31, 2023
+		const minDate = new Date(DATA_START_YEAR, 0, 1);
+		const maxDate = new Date(DATA_END_YEAR, 11, 31);
 		return date >= minDate && date <= maxDate;
 	};
 
 	const validateDate = (date: Date): Date => {
-		const minDate = new Date(2018, 0, 1);
-		const maxDate = new Date(2023, 11, 31);
+		const minDate = new Date(DATA_START_YEAR, 0, 1);
+		const maxDate = new Date(DATA_END_YEAR, 11, 31);
 
 		if (date < minDate) return minDate;
 		if (date > maxDate) return maxDate;
@@ -140,13 +141,14 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
 						}
 						className="w-1/3 rounded border px-3 py-2"
 					>
-						{Array.from({ length: 6 }, (_, index) => 2018 + index).map(
-							(year) => (
-								<option key={year} value={year}>
-									{year}
-								</option>
-							),
-						)}
+						{Array.from(
+							{ length: DATA_END_YEAR - DATA_START_YEAR + 1 },
+							(_, index) => DATA_START_YEAR + index,
+						).map((year) => (
+							<option key={year} value={year}>
+								{year}
+							</option>
+						))}
 					</select>
 				</div>
 			</PopoverContent>

@@ -1,9 +1,6 @@
 interface Location {
 	primary_rd: string;
 	secondary_rd: string;
-	distance: number;
-	direction: string;
-	intersection: string;
 	city: string;
 	county: string;
 	point_x: number;
@@ -17,20 +14,12 @@ interface Severity {
 	count_severe_inj: number;
 	count_visible_inj: number;
 	count_complaint_pain: number;
-	count_ped_killed: number;
-	count_ped_injured: number;
-	count_bicyclist_killed: number;
-	count_bicyclist_injured: number;
-	count_mc_killed: number;
-	count_mc_injured: number;
 }
 
 interface Environment {
 	weather_1: string;
-	weather_2: string;
 	road_surface: string;
 	road_cond_1: string;
-	road_cond_2: string;
 	lighting: string;
 	state_hwy_ind: string;
 }
@@ -44,9 +33,7 @@ interface Party {
 	party_sex: string;
 	party_sobriety: string;
 	party_drug_physical: string;
-	dir_of_travel: string;
 	party_safety_equip_1: string;
-	party_safety_equip_2: string;
 	finan_respons: string;
 	vehicle_year: number;
 	vehicle_make: string;
@@ -64,7 +51,6 @@ interface Victim {
 	victim_degree_of_injury: string;
 	victim_seating_position: string;
 	victim_safety_equip_1: string;
-	victim_safety_equip_2: string;
 	victim_ejected: string;
 }
 
@@ -97,7 +83,7 @@ interface CountyAndCity {
 	city: string;
 }
 
-interface Predictions{
+interface Predictions {
 	lat: number | null;
 	lon: number | null;
 	rad: number | null;

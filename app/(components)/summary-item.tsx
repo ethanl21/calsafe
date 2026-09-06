@@ -15,19 +15,7 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 
-interface YearlyData {
-	year: number;
-	data: {
-		total_crashes: number;
-		total_injuries: number | null;
-		total_fatalities: number | null;
-		pedestrian_accidents: number;
-		bicycle_accidents: number;
-		motorcycle_accidents: number;
-		truck_accidents: number;
-		alcohol_related: number;
-	};
-}
+import { YearlyData } from "@/lib/types";
 
 interface SummaryItemProps {
 	yearData: YearlyData;

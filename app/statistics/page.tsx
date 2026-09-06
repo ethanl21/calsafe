@@ -4,8 +4,8 @@
 import { useState } from "react";
 import { AreaSelector } from "../(components)/area-selector";
 import { DateSelector } from "../(components)/date-selector";
-import { AccidentsByYear } from "../(components)/charts/AccidentsByYear";
 import { SummaryItem } from "../(components)/summary-item";
+import { YearlyCharts } from "../(components)/yearly-charts";
 import { nanoid } from "nanoid";
 
 import locations from "../locations.json";
@@ -13,80 +13,57 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Loader, LoaderCircle } from "lucide-react";
 import { format } from "date-fns";
+import { YearlyData } from "@/lib/types";
+import {
+	DATA_START_DATE,
+	DATA_END_DATE,
+	DATA_YEAR_RANGE_LABEL,
+	DATA_END_YEAR,
+} from "@/lib/constants";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-interface YearlyData {
-	year: number;
-	data: {
-		total_crashes: number;
-		total_injuries: number | null;
-		total_fatalities: number | null;
-		pedestrian_accidents: number;
-		bicycle_accidents: number;
-		motorcycle_accidents: number;
-		truck_accidents: number;
-		alcohol_related: number;
-	};
-}
-
-
-// util
-// Function to convert numeric day index to text
 const getDayName = (dayIndex: number) => {
-	// Create a date object with the specified day index
-	const date = new Date(1970, 0, 4 + dayIndex); // Jan 4, 1970 is a Sunday
-	return format(date, "EEEE"); // Full day name (e.g., "Sunday")
+	const date = new Date(1970, 0, 4 + dayIndex);
+	return format(date, "EEEE");
 };
 
-
-
 const StatisticsPage = () => {
-	// State for selected date range
-	const [startDate, setStartDate] = useState(new Date("2018-01-01"));
-	const [endDate, setEndDate] = useState(new Date("2023-12-31"));
-
-	// State for location (county & city)
+	const [startDate, setStartDate] = useState(new Date(DATA_START_DATE));
+	const [endDate, setEndDate] = useState(new Date(DATA_END_DATE));
 	const [county, setCounty] = useState("");
 	const [city, setCity] = useState("");
 	const [countyByYearData, setCountyByYearData] = useState<YearlyData[]>([]);
 	const [summaryData, setSummaryData] = useState<YearlyData[]>([]);
-
-	// State for API response, loading, and errors
 	const [statistics, setStatistics] = useState<any | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
-	
-	// Fetch statistics from the API
 	const fetchStatistics = async () => {
 		if (!county) {
 			setError("Please select a county.");
 			return;
 		}
-
 		setError("");
 		setLoading(true);
 
-		const queryUrl = `${API_BASE_URL}/api/statistics/?start_date=${startDate.toISOString().slice(0, 10)}&end_date=${endDate.toISOString().slice(0, 10)}&county=${county}${city ? `&city=${city}` : ""}`;
-
-		console.log("Fetching statistics with URL:", queryUrl);
+		const params = new URLSearchParams({
+			start_date: startDate.toISOString().slice(0, 10),
+			end_date: endDate.toISOString().slice(0, 10),
+			county,
+		});
+		if (city) params.append("city", city);
 
 		try {
-			const response = await fetch(queryUrl);
-
+			const response = await fetch(`/api/statistics?${params}`);
 			if (!response.ok) {
-				if (response.status === 404) {
-					setError("No accident data found for the specified query.");
-				} else {
-					setError(`Error: ${response.statusText}`);
-				}
+				setError(
+					response.status === 404
+						? "No accident data found."
+						: `Error: ${response.statusText}`,
+				);
 				setStatistics(null);
 				return;
 			}
-
-			const data = await response.json();
-			setStatistics(data);
+			setStatistics(await response.json());
 		} catch (err) {
 			setError("An error occurred while fetching the data.");
 			console.error("Fetch error:", err);
@@ -95,47 +72,32 @@ const StatisticsPage = () => {
 		}
 	};
 
-	//fetch County graphs
 	const countySubmit = async () => {
 		setCountyByYearData([]);
-		setError(""); // Reset error
-		// Construct the base query URL
-		let queryUrl = `${API_BASE_URL}/api/summaryByCounty/?county=${county}`;
-		console.log("Query URL:", queryUrl);
-		if (county === "") {
-			queryUrl = `${API_BASE_URL}/api/summary/`;
-		}
+		setError("");
+		const url = county
+			? `/api/summaryByCounty?county=${county}`
+			: "/api/summary";
 		try {
-			const response = await fetch(queryUrl);
-				// Handle 404 errors
+			const response = await fetch(url);
 			if (response.status === 404) {
-				setError("No accident data found for the specified query.");
-				setCountyByYearData([]);
+				setError("No accident data found.");
 				return;
 			}
-			if (!response.ok) {
-				throw new Error(`Error: ${response.statusText}`);
-			}
-				const data = await response.json();
-			setCountyByYearData(data);
+			if (!response.ok) throw new Error(response.statusText);
+			setCountyByYearData(await response.json());
 		} catch (err) {
 			setError("An error occurred while fetching the data.");
 			console.error("Fetch error:", err);
 		}
 	};
 
-	//fetch summary data
 	const fetchSummaryData = async () => {
 		setLoading(true);
 		try {
-			const queryUrl = `${API_BASE_URL}/api/summary/`;
-			const response = await fetch(queryUrl);
-			if (!response.ok) {
-				throw new Error(`Error: ${response.statusText}`);
-			}
-			const data: YearlyData[] = await response.json();
-			setSummaryData(data);
-
+			const response = await fetch("/api/summary");
+			if (!response.ok) throw new Error(response.statusText);
+			setSummaryData(await response.json());
 		} catch (err) {
 			setError("An error occurred while fetching the summary data.");
 			console.error(err);
@@ -144,12 +106,11 @@ const StatisticsPage = () => {
 		}
 	};
 
-	//fed to submit button
-	const runAllQueries= async () =>{
+	const runAllQueries = async () => {
 		await fetchStatistics();
 		await countySubmit();
 		await fetchSummaryData();
-	}
+	};
 
 	return (
 		<div className="p-6">
@@ -158,7 +119,6 @@ const StatisticsPage = () => {
 				<p className="text-gray-500">Enter details below to get started</p>
 			</header>
 
-			{/* Date Range and Location */}
 			<div className="mx-auto flex w-fit flex-col gap-2">
 				<div className="flex flex-row gap-2">
 					<DateSelector
@@ -167,7 +127,6 @@ const StatisticsPage = () => {
 						endDate={endDate}
 						setEndDate={setEndDate}
 					/>
-
 					<AreaSelector
 						locations={Object.values(locations.counties) as County[]}
 						currentLocation={{ county, city }}
@@ -178,14 +137,13 @@ const StatisticsPage = () => {
 					/>
 				</div>
 				<Button onClick={runAllQueries}>
-				<Loader /> Fetch Statistics
+					<Loader /> Fetch Statistics
 				</Button>
 			</div>
 			<div>
 				<div>
 					<Separator className="my-4" />
 
-					{/* Loading, Error, and Results */}
 					<div className="mx-auto w-fit">
 						{loading && (
 							<div className="text-blue-500">
@@ -259,16 +217,20 @@ const StatisticsPage = () => {
 									<h3 className="font-semibold">City with Most Accidents</h3>
 									<p>{statistics.most_accidents_city.city}</p>
 									<p>
-										Accident Count: {statistics.most_accidents_city.accident_count}
+										Accident Count:{" "}
+										{statistics.most_accidents_city.accident_count}
 									</p>
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
 									<h3 className="font-semibold">
 										Intersection with Most Accidents
 									</h3>
-									<p>Primary Road: {statistics.most_common_road_pair.primary_rd}</p>
 									<p>
-										Secondary Road: {statistics.most_common_road_pair.secondary_rd}
+										Primary Road: {statistics.most_common_road_pair.primary_rd}
+									</p>
+									<p>
+										Secondary Road:{" "}
+										{statistics.most_common_road_pair.secondary_rd}
 									</p>
 									<p>Accidents: {statistics.most_common_road_pair.count}</p>
 								</div>
@@ -278,10 +240,14 @@ const StatisticsPage = () => {
 									<p>Accidents: {statistics.most_common_primary_road.count}</p>
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Most Common Day for Accidents</h3>
+									<h3 className="font-semibold">
+										Most Common Day for Accidents
+									</h3>
 									<p>
 										Day:{" "}
-										{getDayName(Number.parseInt(statistics.most_common_day.day))}
+										{getDayName(
+											Number.parseInt(statistics.most_common_day.day),
+										)}
 									</p>
 									<p>Count: {statistics.most_common_day.count}</p>
 								</div>
@@ -291,80 +257,25 @@ const StatisticsPage = () => {
 				</div>
 			</div>
 
-			<h1 className="mb-2 flex justify-center text-4xl font-bold m-5">Year to Date Graphs</h1>
-			<p className="text-gray-500 flex justify-center">For the specified county</p>
+			<h1 className="m-5 mb-2 flex justify-center text-4xl font-bold">
+				Year to Date Graphs
+			</h1>
+			<p className="flex justify-center text-gray-500">
+				For the specified county
+			</p>
 			<div className="container mx-auto">
-				<div className="columns-2">
-					<div>
-						<h1 className="mb-2 flex justify-center text-2xl font-bold">
-							Accidents by Year
-						</h1>
-						{countyByYearData.length > 0 ? (
-							<AccidentsByYear
-								data={countyByYearData.map((data) => {
-									return { year: data.year, total: data.data.total_crashes };
-								})}
-							></AccidentsByYear>
-						) : (
-							!loading && <p className="flex justify-center">No statistics available for the specified query.</p>
-						)}
-					</div>
-					<div>
-						<h1 className="mb-2 flex justify-center text-2xl font-bold">
-							Motorcycle Accidents
-						</h1>
-	
-						{countyByYearData.length > 0 ? (
-							<AccidentsByYear
-								data={countyByYearData.map((data) => {
-									return {
-										year: data.year,
-										total: data.data.motorcycle_accidents,
-									};
-								})}
-							></AccidentsByYear>
-						) : (
-							!loading && <p className="flex justify-center">No statistics available for the specified query.</p>
-						)}
-					</div>
-	
-					<div>
-						<h1 className="mb-2 flex justify-center text-2xl font-bold">
-							Traffic Injuries
-						</h1>
-						{countyByYearData.length > 0 ? (
-							<AccidentsByYear
-								data={countyByYearData.map((data) => {
-									return { year: data.year, total: data.data.total_injuries };
-								})}
-							></AccidentsByYear>
-						) : (
-							!loading && <p className="flex justify-center">No statistics available for the specified query.</p>
-						)}
-					</div>
-					<div>
-						<h1 className="mb-2 flex justify-center text-2xl font-bold">
-							Pedestrians Involved
-						</h1>
-	
-						{countyByYearData.length > 0 ? (
-							<AccidentsByYear
-								data={countyByYearData.map((data) => {
-									return {
-										year: data.year,
-										total: data.data.pedestrian_accidents,
-									};
-								})}
-							></AccidentsByYear>
-						) : (
-							!loading && <p className="flex justify-center">No statistics available for the specified query.</p>
-						)}
-					</div>
-				</div>
+				<YearlyCharts data={countyByYearData} loading={loading} />
 			</div>
 
-			<h1 className="mb-2 flex justify-center text-4xl font-bold m-5">Southern California Statistics</h1>
-			<p className="mb-2 text-gray-500 flex justify-center">From 2018-2013</p>
+			<h1 className="m-5 mb-2 flex justify-center text-4xl font-bold">
+				Southern California Statistics
+			</h1>
+			<p className="mb-2 flex justify-center text-gray-500">
+				{DATA_YEAR_RANGE_LABEL}
+			</p>
+			<p className="mb-2 flex justify-center text-sm text-gray-500">
+				{DATA_END_YEAR} data is provisional and updates as reports arrive
+			</p>
 			<div className="container mx-auto">
 				<div className="grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 					{summaryData.map((yearData) => (

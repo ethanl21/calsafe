@@ -4,46 +4,24 @@
 import React, { useState, useEffect } from "react";
 import { SummaryItem } from "../(components)/summary-item";
 import { nanoid } from "nanoid";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
-
-interface YearlyData {
-	year: number;
-	data: {
-		total_crashes: number;
-		total_injuries: number | null;
-		total_fatalities: number | null;
-		pedestrian_accidents: number;
-		bicycle_accidents: number;
-		motorcycle_accidents: number;
-		truck_accidents: number;
-		alcohol_related: number;
-	};
-}
+import { YearlyData } from "@/lib/types";
 
 const SummaryPage = () => {
 	const [summaryData, setSummaryData] = useState<YearlyData[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
-	const queryUrl = `${API_BASE_URL}/api/summary/`;
-
 	const [yearRange, setYearRange] = useState<number[]>([]);
 
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
 			try {
-				const response = await fetch(queryUrl);
-				if (!response.ok) {
-					throw new Error(`Error: ${response.statusText}`);
-				}
+				const response = await fetch("/api/summary");
+				if (!response.ok) throw new Error(response.statusText);
 				const data: YearlyData[] = await response.json();
 				setSummaryData(data);
-
-				// Extract min and max year from the data
 				const minYear = Math.min(...data.map((yearData) => yearData.year));
 				const maxYear = Math.max(...data.map((yearData) => yearData.year));
-
 				setYearRange([minYear, maxYear]);
 			} catch (err) {
 				setError("An error occurred while fetching the summary data.");
@@ -53,7 +31,7 @@ const SummaryPage = () => {
 			}
 		};
 		fetchData();
-	}, [queryUrl]);
+	}, []);
 
 	if (loading) return <p>Loading...</p>;
 	if (error) return <p style={{ color: "red" }}>{error}</p>;

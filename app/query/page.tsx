@@ -9,14 +9,29 @@ import { ConditionsSelector } from "../(components)/conditions-selector";
 import { InfoCard } from "../(components)/info-card";
 
 import locations from "../locations.json";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import {
+	Filters,
+	Conditions,
+	DEFAULT_FILTERS,
+	DEFAULT_CONDITIONS,
+} from "@/lib/types";
+import { DATA_START_DATE, DATA_END_DATE } from "@/lib/constants";
+import { getSearchParams, fetchAccidents } from "@/lib/api";
+import {
+	safetyEquipMap,
+	finanResponsMap,
+	partySobrietyMap,
+	partyDrugPhysicalMap,
+	vehicleTypeMap,
+	inattentionMap,
+	movePreAccMap,
+} from "@/lib/chp-codes";
 
 export default function Page() {
 	const [city, setCity] = useState("");
 	const [county, setCounty] = useState("");
-	const [start_date, setStartDate] = useState(new Date("2018-01-01"));
-	const [end_date, setEndDate] = useState(new Date("2023-12-31"));
+	const [start_date, setStartDate] = useState(new Date(DATA_START_DATE));
+	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[]>([]);
 	const [currentPage, setCurrentPage] = useState(1);
@@ -24,191 +39,23 @@ export default function Page() {
 	const [loading, setLoading] = useState(false);
 	const accidentsPerPage = 30;
 
-	const [filters, setFilters] = useState({
-		alcohol: false,
-		motorcycle: false,
-		hitAndRun: false,
-		fatal: false,
-		bicycleAccident: false,
-		pedestrianAccident: false,
-		truckAccident: false,
-		stateHighway: false,
-		usePredictions: false,
-	});
+	const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
+	const [conditions, setConditions] = useState<Conditions>(DEFAULT_CONDITIONS);
 
-	const [conditions, setConditions] = useState({
-		weather: "",
-		lighting: "",
-		collisionType: "",
-		roadSurface: "",
-		roadCondition: "",
-	});
-
-	const safetyEquipMap = {
-		A: "None in Vehicle",
-		B: "Unknown",
-		C: "Lap Belt Used",
-		D: "Lap Belt Not Used",
-		E: "Shoulder Harness Used",
-		F: "Shoulder Harness Not Used",
-		G: "Lap/Shoulder Harness Used",
-		H: "Lap/Shoulder Harness Not Used",
-		J: "Passive Restraint Used",
-		K: "Passive Restraint Not Used",
-		L: "Air Bag Deployed",
-		M: "Air Bag Not Deployed",
-		N: "Other",
-		P: "Not Required",
-		Q: "Child Restraint in Vehicle Used",
-		R: "Child Restraint in Vehicle Not Used",
-		S: "Child Restraint in Vehicle, Use Unknown",
-		T: "Child Restraint in Vehicle, Improper Use",
-		U: "No Child Restraint in Vehicle",
-		V: "Driver, Motorcycle Helmet Not Used",
-		W: "Driver, Motorcycle Helmet Used",
-		X: "Passenger, Motorcycle Helmet Not Used",
-		Y: "Passenger, Motorcycle Helmet Used",
-		"": "Not Stated",
-	};
-
-	const finanResponsMap = {
-		N: "No Proof of Insurance Obtained",
-		Y: "Yes, Proof of Insurance Obtained",
-		O: "Not Applicable",
-		E: "Called Away Before Obtaining Insurance",
-		"": "Not Stated",
-	};
-
-	const partySobrietyMap = {
-		A: "Had Not Been Drinking",
-		B: "Had Been Drinking, Under Influence",
-		C: "Had Been Drinking, Not Under Influence",
-		D: "Had Been Drinking, Impairment Unknown",
-		G: "Impairment Unknown",
-		H: "Not Applicable",
-	};
-
-	const partyDrugPhysicalMap = {
-		E: "Under Drug Influence",
-		F: "Impairment - Physical",
-		G: "Impairment Unknown",
-		H: "Not Applicable",
-		I: "Sleepy/Fatigued",
-		"": "Not Stated",
-	};
-
-	const vehicleTypeMap = {
-		A: "Passenger Car/Station Wagon",
-		B: "Passenger Car with Trailer",
-		C: "Motorcycle/Scooter",
-		D: "Pickup or Panel Truck",
-		E: "Pickup or Panel Truck with Trailer",
-		F: "Truck or Truck Tractor",
-		G: "Truck or Truck Tractor with Trailer",
-		H: "Schoolbus",
-		I: "Other Bus",
-		J: "Emergency Vehicle",
-		K: "Highway Construction Equipment",
-		L: "Bicycle",
-		M: "Other Vehicle",
-		N: "Pedestrian",
-		O: "Moped",
-		"": "Not Stated",
-	};
-
-	const inattentionMap = {
-		A: "Cell Phone Handheld (7/1/03)",
-		B: "Cell Phone Handsfree (7/1/03)",
-		C: "Electronic Equipment (1/1/01)",
-		D: "Radio/CD (1/1/01)",
-		E: "Smoking (1/1/01)",
-		F: "Eating (1/1/01)",
-		G: "Children (1/1/01)",
-		H: "Animal (1/1/01)",
-		I: "Personal Hygiene (1/1/01)",
-		J: "Reading (1/1/01)",
-		K: "Other (1/1/01)",
-		P: "Cell Phone (1/1/01, value prior to 7/03 form revision)",
-		"": "Not Stated",
-	};
-
-	const movePreAccMap = {
-		A: "Stopped",
-		B: "Proceeding Straight",
-		C: "Ran Off Road",
-		D: "Making Right Turn",
-		E: "Making Left Turn",
-		F: "Making U-Turn",
-		G: "Backing",
-		H: "Slowing/Stopping",
-		I: "Passing Other Vehicle",
-		J: "Changing Lanes",
-		K: "Parking Maneuver",
-		L: "Entering Traffic",
-		M: "Other Unsafe Turning",
-		N: "Crossed Into Opposing Lane",
-		O: "Parked",
-		P: "Merging",
-		Q: "Traveling Wrong Way",
-		R: "Other",
-		S: "Lane Splitting",
-		"": "Not Stated",
-	};
-
-	const getSearchParams = () => {
-		const params = new URLSearchParams();
-		params.append("city", city);
-		params.append("county", county);
-		params.append("start_date", start_date.toISOString().slice(0, 10));
-		params.append("end_date", end_date.toISOString().slice(0, 10));
-
-		if (filters.fatal) params.append("collision_severity", "1");
-		if (filters.hitAndRun) params.append("hit_and_run", "M,F");
-		if (filters.alcohol) params.append("alcohol_involved", "Y");
-		if (filters.motorcycle) params.append("motorcycle_accident", "Y");
-		if (filters.bicycleAccident) params.append("bicycle_accident", "Y");
-		if (filters.pedestrianAccident) params.append("pedestrian_accident", "Y");
-		if (filters.truckAccident) params.append("truck_accident", "Y");
-		if (filters.stateHighway) params.append("state_hwy_ind", "Y");
-
-		if (conditions.weather && conditions.weather !== "all") {
-			params.append("weather_1", conditions.weather);
-		}
-		if (conditions.collisionType && conditions.collisionType !== "all") {
-			params.append("type_of_collision", conditions.collisionType);
-		}
-		if (conditions.lighting && conditions.lighting !== "all") {
-			params.append("lighting", conditions.lighting);
-		}
-		if (conditions.roadSurface && conditions.roadSurface !== "all") {
-			params.append("road_surface", conditions.roadSurface);
-		}
-		if (conditions.roadCondition && conditions.roadCondition !== "all") {
-			params.append("road_cond_1", conditions.roadCondition);
-		}
-
-		return params.toString();
-	};
-
-	const fetchAccidents = async () => {
-		const params = getSearchParams();
-		const url = `${API_BASE_URL}/api/accidents/?${params}`;
+	const handleFetchAccidents = async () => {
+		const params = getSearchParams(
+			filters,
+			conditions,
+			city,
+			county,
+			start_date,
+			end_date,
+		);
 		setLoading(true);
 		try {
-			const res = await fetch(url);
-			if (!res.ok) {
-				console.error("Failed to fetch accidents:", res.statusText);
-				return;
-			}
-
-			const data = await res.json();
-			if (!Array.isArray(data)) {
-				console.error("Unexpected response format:", data);
-				return;
-			}
-
-			setAccidents(data);
-			setCurrentPage(1); // Reset pagination
+			const data = await fetchAccidents(params);
+			setAccidents(data as Accident[]);
+			setCurrentPage(1);
 		} catch (error) {
 			console.error("Error fetching accidents:", error);
 		} finally {
@@ -226,7 +73,6 @@ export default function Page() {
 		indexOfFirstAccident,
 		indexOfLastAccident,
 	);
-
 	const totalPages = Math.ceil(accidents.length / accidentsPerPage);
 
 	return (
@@ -236,20 +82,10 @@ export default function Page() {
 					filters={filters}
 					setFilters={setFilters}
 					clearFilters={() => {
-						setFilters({
-							alcohol: false,
-							motorcycle: false,
-							hitAndRun: false,
-							fatal: false,
-							bicycleAccident: false,
-							pedestrianAccident: false,
-							truckAccident: false,
-							stateHighway: false,
-							usePredictions: false,
-						});
-						fetchAccidents();
+						setFilters(DEFAULT_FILTERS);
+						handleFetchAccidents();
 					}}
-					updateFilters={fetchAccidents}
+					updateFilters={handleFetchAccidents}
 				/>
 				<InfoCard
 					num_datapoints={accidents.length}
@@ -335,10 +171,10 @@ export default function Page() {
 												<strong>County:</strong> {result.location.county}
 											</p>
 											<p className="mx-1">
-												<strong>Lattitude:</strong> {result.location.point_x}
+												<strong>Latitude:</strong> {result.location.point_y}
 											</p>
 											<p className="mx-1">
-												<strong>Longitude:</strong> {result.location.point_y}
+												<strong>Longitude:</strong> {result.location.point_x}
 											</p>
 											<h3 className="mb-3 text-lg">Severity Details</h3>
 											<p className="mx-1">
@@ -425,10 +261,6 @@ export default function Page() {
 												<strong>Truck Involved:</strong>{" "}
 												{result.truck_accident === "Y" ? "Yes" : "No"}
 											</p>
-											<p className="mx-1"></p>
-											<strong>Bicycle Involved:</strong>{" "}
-											{result.bicycle_accident === "Y" ? "Yes" : "No"}
-											<br />
 											<p className="mx-1">
 												<strong>Alcohol Involved:</strong>{" "}
 												{result.alcohol_involved === "Y" ? "Yes" : "No"}
@@ -458,23 +290,24 @@ export default function Page() {
 																? "Slippery (Muddy, Oily, etc.)"
 																: "Not Stated"}
 											</p>
-											<p className="mx-1"></p>
-											<strong>Road Conditions:</strong>{" "}
-											{result.environment.road_cond_1 == "A"
-												? "Potholes"
-												: result.environment.road_cond_1 == "B"
-													? "Loose Materials on Road"
-													: result.environment.road_cond_1 == "C"
-														? "Obstruction on Road"
-														: result.environment.road_cond_1 == "D"
-															? "Construction Zone"
-															: result.environment.road_cond_1 == "E"
-																? "Reduced Width"
-																: result.environment.road_cond_1 == "F"
-																	? "Flooded"
-																	: result.environment.road_cond_1 == "H"
-																		? "No Unsual Conditions"
-																		: "Other/Not Stated"}
+											<p className="mx-1">
+												<strong>Road Conditions:</strong>{" "}
+												{result.environment.road_cond_1 == "A"
+													? "Potholes"
+													: result.environment.road_cond_1 == "B"
+														? "Loose Materials on Road"
+														: result.environment.road_cond_1 == "C"
+															? "Obstruction on Road"
+															: result.environment.road_cond_1 == "D"
+																? "Construction Zone"
+																: result.environment.road_cond_1 == "E"
+																	? "Reduced Width"
+																	: result.environment.road_cond_1 == "F"
+																		? "Flooded"
+																		: result.environment.road_cond_1 == "H"
+																			? "No Unsual Conditions"
+																			: "Other/Not Stated"}
+											</p>
 											<br />
 											<p className="mx-1">
 												<strong>Lighting:</strong>{" "}
@@ -532,7 +365,7 @@ export default function Page() {
 															<strong>Party Sex:</strong> {party.party_sex}
 														</p>
 														<p className="mx-1">
-															<strong>Party Race:</strong> {""}
+															<strong>Party Race:</strong>{" "}
 															{party.race == "A"
 																? "Asian"
 																: party.race == "B"
@@ -618,7 +451,7 @@ export default function Page() {
 																		: victim.victim_role === "4"
 																			? "Bicyclist"
 																			: victim.victim_role === "5"
-																				? "Other (single victim on/in non-motor vehicle; e.g. ridden animal, horse-drawn carriage, train, or building)"
+																				? "Other (single victim on/in non-motor vehicle)"
 																				: victim.victim_role === "6"
 																					? "Non-Injured Party"
 																					: "Unknown"}

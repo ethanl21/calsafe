@@ -1,0 +1,50 @@
+services:
+  db:
+    image: ghcr.io/tursodatabase/libsql-server:latest
+    environment:
+      - SQLD_NODE=primary
+    volumes:
+      - sqld-data:/var/lib/sqld
+    ports:
+      # LAN access for local development and scripts (not exposed publicly).
+      # Remove this if the DB should only be reachable inside compose.
+      - "8080:8080"
+    restart: unless-stopped
+
+  app:
+    build: .
+    environment:
+      - LIBSQL_URL=http://db:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - default
+      - proxy
+
+  # One-off jobs (setup, import, refresh). Examples:
+  #   docker compose --profile tools run --rm importer scripts/setup-db.ts
+  #   docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=2024,2025,2026 --data-dir=/cache
+  importer:
+    build:
+      context: .
+      target: tools
+    environment:
+      - LIBSQL_URL=http://db:8080
+    volumes:
+      - ccrs-cache:/cache
+    profiles:
+      - tools
+
+networks:
+  # Attach your Nginx Proxy Manager deployment to this network, then point a
+  # proxy host at http://app:3000. Fallback: forward NPM to <server-lan-ip>:3000.
+  proxy:
+    name: proxy
+    external: true
+
+volumes:
+  sqld-data:
+  ccrs-cache:
