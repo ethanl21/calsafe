@@ -62,7 +62,7 @@ docker compose up -d app
 
 ## Deployment (Turso cloud)
 
-No code changes are needed. The same `@libsql/client` code talks to Turso cloud when `LIBSQL_URL` is a `libsql://` URL, so this is purely an ops switch.
+No code changes are needed to use Turso cloud instead. The same `@libsql/client` code works with a `libsql://` URL, so only the connection details change.
 
 ```bash
 # one-time: create account, database, and token (dashboard, or Turso CLI)
@@ -81,9 +81,9 @@ npm run db:import -- --years=2024 --limit=2000          # smoke test (~8K writes
 npm run db:import -- --years=2024,2025,2026             # full import
 ```
 
-Watch the write quota. The free tier allows 10M rows written per month and 5GB storage; the 2024-2026 import lands around 6M writes and ~1GB. Check the Turso dashboard after the smoke test and again after the full import, and stop if projections pass ~9M. Monthly refresh imports the current year only (around 1.5M writes), which keeps every month comfortably under the cap. Reruns are idempotent per year, but each rerun spends quota, so avoid blind repeats.
+Watch the write quota. The free tier allows 10M rows written per month and 5GB of storage. The 2024-2026 import lands around 6M writes and ~1GB. Check the Turso dashboard after the smoke test and again after the full import. Stop if projections pass ~9M. Monthly refresh imports the current year only, around 1.5M writes, well under the cap. Reruns are idempotent per year, but each rerun spends quota, so avoid blind repeats.
 
-For the frontend, Vercel's hobby tier pairs well: connect the repo, set `LIBSQL_URL` and `LIBSQL_AUTH_TOKEN` in the project environment, and deploy. No connection pooling or driver changes are required.
+For the frontend, Vercel's hobby tier pairs well. Connect the repo and set `LIBSQL_URL` and `LIBSQL_AUTH_TOKEN` in the project environment, then deploy. You don't need connection pooling or driver changes.
 
 ## Environment variables
 
