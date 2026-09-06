@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -13,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Loader, LoaderCircle } from "lucide-react";
 import { format } from "date-fns";
-import { YearlyData } from "@/lib/types";
+import { YearlyData, type StatisticsResponse } from "@/lib/types";
 import {
 	DATA_START_DATE,
 	DATA_END_DATE,
@@ -33,7 +32,7 @@ const StatisticsPage = () => {
 	const [city, setCity] = useState("");
 	const [countyByYearData, setCountyByYearData] = useState<YearlyData[]>([]);
 	const [summaryData, setSummaryData] = useState<YearlyData[]>([]);
-	const [statistics, setStatistics] = useState<any | null>(null);
+	const [statistics, setStatistics] = useState<StatisticsResponse | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
@@ -63,7 +62,7 @@ const StatisticsPage = () => {
 				setStatistics(null);
 				return;
 			}
-			setStatistics(await response.json());
+			setStatistics((await response.json()) as StatisticsResponse);
 		} catch (err) {
 			setError("An error occurred while fetching the data.");
 			console.error("Fetch error:", err);
@@ -215,10 +214,10 @@ const StatisticsPage = () => {
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
 									<h3 className="font-semibold">City with Most Accidents</h3>
-									<p>{statistics.most_accidents_city.city}</p>
+									<p>{statistics.most_accidents_city?.city}</p>
 									<p>
 										Accident Count:{" "}
-										{statistics.most_accidents_city.accident_count}
+										{statistics.most_accidents_city?.accident_count}
 									</p>
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
@@ -226,18 +225,41 @@ const StatisticsPage = () => {
 										Intersection with Most Accidents
 									</h3>
 									<p>
-										Primary Road: {statistics.most_common_road_pair.primary_rd}
+										Primary Road: {statistics.most_common_road_pair?.primary_rd}
 									</p>
 									<p>
 										Secondary Road:{" "}
-										{statistics.most_common_road_pair.secondary_rd}
+										{statistics.most_common_road_pair?.secondary_rd}
 									</p>
-									<p>Accidents: {statistics.most_common_road_pair.count}</p>
+									<p>Accidents: {statistics.most_common_road_pair?.count}</p>
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
 									<h3 className="font-semibold">Road with Most Accidents</h3>
-									<p>{statistics.most_common_primary_road.primary_rd}</p>
-									<p>Accidents: {statistics.most_common_primary_road.count}</p>
+									<p>
+										{
+											(
+												statistics as StatisticsResponse & {
+													most_common_primary_road?: {
+														primary_rd: string;
+														count: number;
+													};
+												}
+											).most_common_primary_road?.primary_rd
+										}
+									</p>
+									<p>
+										Accidents:{" "}
+										{
+											(
+												statistics as StatisticsResponse & {
+													most_common_primary_road?: {
+														primary_rd: string;
+														count: number;
+													};
+												}
+											).most_common_primary_road?.count
+										}
+									</p>
 								</div>
 								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
 									<h3 className="font-semibold">
@@ -245,11 +267,13 @@ const StatisticsPage = () => {
 									</h3>
 									<p>
 										Day:{" "}
-										{getDayName(
-											Number.parseInt(statistics.most_common_day.day),
-										)}
+										{statistics.most_common_day
+											? getDayName(
+													Number.parseInt(statistics.most_common_day.day),
+												)
+											: null}
 									</p>
-									<p>Count: {statistics.most_common_day.count}</p>
+									<p>Count: {statistics.most_common_day?.count}</p>
 								</div>
 							</div>
 						)}
