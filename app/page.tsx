@@ -29,12 +29,14 @@ export default function Page() {
 	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[] | undefined>();
+	const [totalResults, setTotalResults] = useState<number | undefined>();
 	const [predictions, setPredictions] = useState<Predictions[] | undefined>();
 	const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 	const [conditions, setConditions] = useState<Conditions>(DEFAULT_CONDITIONS);
 
 	const handleSearch = () => {
 		setPredictions(undefined);
+		setTotalResults(undefined);
 		const params = getSearchParams(
 			filters,
 			conditions,
@@ -49,9 +51,10 @@ export default function Page() {
 			setPredictions(centroidData[kind].Precision[4]);
 		}
 
-		fetch(`/api/accidents?${params}`)
+		fetch(`/api/accidents?${params}&limit=2000`)
 			.then((res) => {
 				if (!res.ok) throw new Error(res.statusText);
+				setTotalResults(Number(res.headers.get("X-Total-Count") ?? 0));
 				return res.json();
 			})
 			.then((data) => {
@@ -87,6 +90,14 @@ export default function Page() {
 				</aside>
 
 				<div className="flex grow flex-col space-y-1">
+					{totalResults !== undefined &&
+						accidents &&
+						totalResults > accidents.length && (
+							<p className="rounded-sm border px-2 py-1 text-sm text-gray-600 dark:text-gray-300">
+								Showing {accidents.length} of {totalResults} most recent. Narrow
+								your filters to see more.
+							</p>
+						)}
 					<div className="z-10 h-full grow rounded-sm border-2">
 						<Map accidents={accidents} predictions={predictions} />
 					</div>

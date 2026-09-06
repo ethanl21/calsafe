@@ -42,8 +42,16 @@ export function getSearchParams(
 	return params.toString();
 }
 
-export async function fetchAccidents(params: string): Promise<unknown[]> {
-	const res = await fetch(`/api/accidents?${params}`);
+export async function fetchAccidents(
+	params: string,
+	limit?: number,
+	offset?: number,
+): Promise<{ accidents: Accident[]; total: number }> {
+	const query =
+		limit === undefined
+			? params
+			: `${params}&limit=${limit}&offset=${offset ?? 0}`;
+	const res = await fetch(`/api/accidents?${query}`);
 	if (!res.ok) {
 		throw new Error(`Failed to fetch accidents: ${res.statusText}`);
 	}
@@ -51,5 +59,8 @@ export async function fetchAccidents(params: string): Promise<unknown[]> {
 	if (!Array.isArray(data)) {
 		throw new Error("Unexpected response format");
 	}
-	return data;
+	return {
+		accidents: data as Accident[],
+		total: Number(res.headers.get("X-Total-Count") ?? data.length),
+	};
 }

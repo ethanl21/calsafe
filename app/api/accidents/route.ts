@@ -95,6 +95,15 @@ export async function GET(request: NextRequest) {
 	const stateHwyInd = searchParams.get("state_hwy_ind");
 	if (stateHwyInd) addFilter(`e.state_hwy_ind = ?`, stateHwyInd);
 
+	const limit = Math.min(
+		Math.max(parseInt(searchParams.get("limit") || "500", 10) || 500, 1),
+		2000,
+	);
+	const offset = Math.max(
+		parseInt(searchParams.get("offset") || "0", 10) || 0,
+		0,
+	);
+
 	const whereClause =
 		conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
@@ -114,9 +123,22 @@ export async function GET(request: NextRequest) {
 		JOIN environment e ON a.environment_id = e.environment_id
 		${whereClause}
 		ORDER BY a.collision_date DESC
+		LIMIT ? OFFSET ?
 	`;
 
 	try {
+		const countResult = await db.execute({
+			sql: `SELECT COUNT(*) AS total FROM accidents a
+				JOIN location l ON a.location_id = l.location_id
+				JOIN severity s ON a.severity_id = s.severity_id
+				JOIN environment e ON a.environment_id = e.environment_id
+				${whereClause}`,
+			args: values,
+		});
+		const total = Number(
+			(countResult.rows[0] as Record<string, unknown> | undefined)?.total ?? 0,
+		);
+		values.push(limit, offset);
 		const result = await db.execute({ sql: mainQuery, args: values });
 
 		const accidents = await Promise.all(
@@ -177,7 +199,9 @@ export async function GET(request: NextRequest) {
 			}),
 		);
 
-		return NextResponse.json(accidents);
+		const res = NextResponse.json(accidents);
+		res.headers.set("X-Total-Count", String(total));
+		return res;
 	} catch (error) {
 		console.error("Database query error:", error);
 		return NextResponse.json(

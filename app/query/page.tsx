@@ -34,6 +34,7 @@ export default function Page() {
 	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[]>([]);
+	const [totalResults, setTotalResults] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [expanded, setExpanded] = useState<number | null>(null);
 	const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ export default function Page() {
 	const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
 	const [conditions, setConditions] = useState<Conditions>(DEFAULT_CONDITIONS);
 
-	const handleFetchAccidents = async () => {
+	const handleFetchAccidents = async (page = 1) => {
 		const params = getSearchParams(
 			filters,
 			conditions,
@@ -53,9 +54,15 @@ export default function Page() {
 		);
 		setLoading(true);
 		try {
-			const data = await fetchAccidents(params);
-			setAccidents(data as Accident[]);
-			setCurrentPage(1);
+			const { accidents: rows, total } = await fetchAccidents(
+				params,
+				accidentsPerPage,
+				(page - 1) * accidentsPerPage,
+			);
+			setAccidents(rows);
+			setTotalResults(total);
+			setCurrentPage(page);
+			setExpanded(null);
 		} catch (error) {
 			console.error("Error fetching accidents:", error);
 		} finally {
@@ -67,13 +74,8 @@ export default function Page() {
 		setExpanded(expanded === index ? null : index);
 	};
 
-	const indexOfLastAccident = currentPage * accidentsPerPage;
-	const indexOfFirstAccident = indexOfLastAccident - accidentsPerPage;
-	const currentAccidents = accidents.slice(
-		indexOfFirstAccident,
-		indexOfLastAccident,
-	);
-	const totalPages = Math.ceil(accidents.length / accidentsPerPage);
+	const currentAccidents = accidents;
+	const totalPages = Math.max(Math.ceil(totalResults / accidentsPerPage), 1);
 
 	return (
 		<div className="flex gap-2 px-2">
@@ -88,7 +90,7 @@ export default function Page() {
 					updateFilters={handleFetchAccidents}
 				/>
 				<InfoCard
-					num_datapoints={accidents.length}
+					num_datapoints={totalResults}
 					start_date={start_date}
 					end_date={end_date}
 				/>
@@ -542,7 +544,7 @@ export default function Page() {
 					<div className="mt-4 flex justify-between">
 						<button
 							disabled={currentPage === 1}
-							onClick={() => setCurrentPage((prev) => prev - 1)}
+							onClick={() => handleFetchAccidents(currentPage - 1)}
 							className="rounded bg-gray-700 px-4 py-2 text-white disabled:bg-gray-500 disabled:opacity-50"
 						>
 							Previous
@@ -552,7 +554,7 @@ export default function Page() {
 						</span>
 						<button
 							disabled={currentPage === totalPages}
-							onClick={() => setCurrentPage((prev) => prev + 1)}
+							onClick={() => handleFetchAccidents(currentPage + 1)}
 							className="rounded bg-gray-700 px-4 py-2 text-white disabled:bg-gray-500 disabled:opacity-50"
 						>
 							Next

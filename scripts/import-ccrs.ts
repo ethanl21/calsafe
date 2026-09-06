@@ -178,6 +178,57 @@ function safeNum(val: unknown): number | null {
 	const n = Number(val);
 	return isNaN(n) ? null : n;
 }
+
+// Crash timestamps arrive in whatever format CCRS currently uses (observed:
+// ISO "YYYY-MM-DDTHH:MM:SS" and US "MM/DD/YYYY HH:MM"). Anything else, or any
+// out-of-range component, yields nulls rather than a bad row.
+function parseCrashDateTime(raw: string): {
+	date: string | null;
+	time: string | null;
+} {
+	const s = raw.trim();
+	if (!s) return { date: null, time: null };
+	const valid = (
+		Y: string,
+		Mo: string,
+		D: string,
+		h?: string,
+		mi?: string,
+		sec?: string,
+	) => {
+		if (Number(Mo) < 1 || Number(Mo) > 12 || Number(D) < 1 || Number(D) > 31)
+			return null;
+		const date = `${Y}-${Mo.padStart(2, "0")}-${D.padStart(2, "0")}`;
+		let time: string | null = null;
+		if (
+			h !== undefined &&
+			mi !== undefined &&
+			Number(h) <= 23 &&
+			Number(mi) <= 59
+		) {
+			time = `${h.padStart(2, "0")}:${mi}:${sec ?? "00"}`;
+		}
+		return { date, time };
+	};
+	let m = s.match(
+		/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2})(?::(\d{2}))?)?/,
+	);
+	if (m)
+		return (
+			valid(m[1], m[2], m[3], m[4], m[5], m[6]) ?? { date: null, time: null }
+		);
+	m = s.match(
+		/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?: (\d{1,2}):(\d{2})(?::(\d{2}))?)?/,
+	);
+	if (m)
+		return (
+			valid(m[3], m[1], m[2], m[4], m[5], m[6]) ?? { date: null, time: null }
+		);
+	return { date: null, time: null };
+}
+
+// Count of rows whose date field was unparseable (reported per year).
+let badDates = 0;
 // Truncate to fit CHAR(1) / CHAR(2) columns (CCRS sometimes has longer codes).
 function c1(val: unknown, fallback: string | null = "N"): string | null {
 	const s = safeStr(val);
@@ -471,21 +522,25 @@ function transformCrash(
 	else if (numInjured >= 4) severityCode = "2";
 	else if (numInjured >= 1) severityCode = "3";
 
-	const crashDateTime = get(row, keyCache, "Crash Date Time", "CrashDateTime");
-	const crashDate = crashDateTime ? crashDateTime.split("T")[0] : null;
-	const timeDesc = get(
-		row,
-		keyCache,
-		"Crash Time Description",
-		"CrashTimeDescription",
+	const { date: crashDate, time: stampTime } = parseCrashDateTime(
+		get(row, keyCache, "Crash Date Time", "CrashDateTime"),
 	);
-	let crashTime: string | null = null;
-	if (/^\d{3,4}$/.test(timeDesc)) {
-		const t = timeDesc.padStart(4, "0");
-		const hh = Number(t.slice(0, 2));
-		const mm = Number(t.slice(2));
-		if (hh <= 23 && mm <= 59) crashTime = `${t.slice(0, 2)}:${t.slice(2)}:00`;
+	let crashTime = stampTime;
+	if (!crashTime) {
+		const timeDesc = get(
+			row,
+			keyCache,
+			"Crash Time Description",
+			"CrashTimeDescription",
+		);
+		if (/^\d{3,4}$/.test(timeDesc)) {
+			const t = timeDesc.padStart(4, "0");
+			const hh = Number(t.slice(0, 2));
+			const mm = Number(t.slice(2));
+			if (hh <= 23 && mm <= 59) crashTime = `${t.slice(0, 2)}:${t.slice(2)}:00`;
+		}
 	}
+	if (!crashDate) badDates++;
 
 	const hitRunRaw = get(row, keyCache, "HitRun");
 	const hitAndRun = hitRunRaw === "M" || hitRunRaw === "F" ? hitRunRaw : "N";
@@ -602,6 +657,7 @@ async function importYear(year: number): Promise<void> {
 		const insertMeter = new Meter(`${year}/crashes insert`);
 		let chunk: CrashAccum[] = [];
 		let kept = 0;
+		badDates = 0;
 		for await (const { row, keyCache } of readCsv(paths.crashes, LIMIT)) {
 			parseMeter.add();
 			const t = transformCrash(row, keyCache, year);
@@ -622,6 +678,11 @@ async function importYear(year: number): Promise<void> {
 		parseMeter.done();
 		insertMeter.done();
 		console.log(`[${year}/crashes] kept ${fmtInt(kept)} SoCal crashes`);
+		if (badDates > 0) {
+			console.log(
+				`[${year}/crashes] WARNING: ${fmtInt(badDates)} rows had unparseable dates (stored as NULL)`,
+			);
+		}
 
 		// ---- parties ----
 		console.log(`[${year}/parties] parsing + inserting...`);
