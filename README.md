@@ -60,6 +60,31 @@ docker compose up -d app
 - Monthly refresh (current year only): cron `docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=$(date +\%Y)`.
 - Each January, add the new year's 3 CCRS URLs to `FILES` in `scripts/import-ccrs.ts`.
 
+## Deployment (Turso cloud)
+
+No code changes are needed. The same `@libsql/client` code talks to Turso cloud when `LIBSQL_URL` is a `libsql://` URL, so this is purely an ops switch.
+
+```bash
+# one-time: create account, database, and token (dashboard, or Turso CLI)
+turso db create calsafe
+turso db show calsafe --url
+turso db tokens create calsafe
+```
+
+```bash
+# point the scripts at Turso (in .env.local, or export inline)
+LIBSQL_URL="libsql://<db>.<region>.turso.io"
+LIBSQL_AUTH_TOKEN="<token>"
+
+npm run db:setup                                        # create tables (destructive)
+npm run db:import -- --years=2024 --limit=2000          # smoke test (~8K writes)
+npm run db:import -- --years=2024,2025,2026             # full import
+```
+
+Watch the write quota. The free tier allows 10M rows written per month and 5GB storage; the 2024-2026 import lands around 6M writes and ~1GB. Check the Turso dashboard after the smoke test and again after the full import, and stop if projections pass ~9M. Monthly refresh imports the current year only (around 1.5M writes), which keeps every month comfortably under the cap. Reruns are idempotent per year, but each rerun spends quota, so avoid blind repeats.
+
+For the frontend, Vercel's hobby tier pairs well: connect the repo, set `LIBSQL_URL` and `LIBSQL_AUTH_TOKEN` in the project environment, and deploy. No connection pooling or driver changes are required.
+
 ## Environment variables
 
 | Variable | Purpose |
