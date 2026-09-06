@@ -51,13 +51,13 @@ The importer downloads each yearly CSV once (cached outside the repo) and stream
 git clone <repo> /opt/calsafe && cd /opt/calsafe
 docker compose up -d db
 docker compose --profile tools run --rm importer scripts/setup-db.ts
-docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=2024,2025,2026
-docker compose up -d app
+docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=2024,2025,2026 --data-dir=/cache
+docker compose up -d --build app
 ```
 
 - App: `http://<server-lan-ip>:3000`; DB reachable at `<server-lan-ip>:8080` (LAN only; not exposed publicly).
 - Public URL: add an Nginx Proxy Manager host (`calsafe.<domain>` → `http://app:3000`, shared `proxy` network preferred) plus a Cloudflare A record on existing dynamic DNS.
-- Monthly refresh (current year only): cron `docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=$(date +\%Y)`.
+- Monthly refresh (current year only): cron `cd /opt/calsafe && git pull --ff-only -q && docker compose --profile tools run --rm importer scripts/import-ccrs.ts --years=$(date +\%Y) --data-dir=/cache`.
 - Each January, add the new year's 3 CCRS URLs to `FILES` in `scripts/import-ccrs.ts`.
 
 ## Deployment (Turso cloud)

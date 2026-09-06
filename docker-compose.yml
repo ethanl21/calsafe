@@ -14,7 +14,9 @@ services:
   app:
     # Built locally on first deploy (`up --build`).
     image: calsafe-app:latest
-    build: .
+    build:
+      context: .
+      target: runner
     environment:
       - LIBSQL_URL=http://db:8080
     ports:
@@ -33,6 +35,8 @@ services:
     build:
       context: .
       target: tools
+    # Always rebuild on run, so cron and one-offs never use a stale image.
+    pull_policy: build
     environment:
       - LIBSQL_URL=http://db:8080
     volumes:
