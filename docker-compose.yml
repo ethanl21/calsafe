@@ -12,6 +12,8 @@ services:
     restart: unless-stopped
 
   app:
+    # Built locally on first deploy (`up --build`).
+    image: calsafe-app:latest
     build: .
     environment:
       - LIBSQL_URL=http://db:8080
