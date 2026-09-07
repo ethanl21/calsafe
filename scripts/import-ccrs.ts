@@ -410,6 +410,7 @@ async function deleteChunked(
 	args: Val[],
 ): Promise<number> {
 	let deleted = 0;
+	const meter = new Meter(`clean ${table}`);
 	for (;;) {
 		const res = await db.execute({
 			sql: `DELETE FROM ${table} WHERE rowid IN (SELECT rowid FROM ${table} WHERE ${where} LIMIT ${DELETE_CHUNK})`,
@@ -417,8 +418,10 @@ async function deleteChunked(
 		});
 		const n = res.rowsAffected ?? 0;
 		deleted += n;
+		meter.add(n);
 		if (n === 0) break;
 	}
+	meter.done();
 	return deleted;
 }
 
@@ -444,8 +447,7 @@ async function cleanYear(year: number): Promise<void> {
 		],
 	];
 	for (const [table, where, args] of steps) {
-		const n = await deleteChunked(table, where, args);
-		if (n > 0) console.log(`[${year}] cleaned ${fmtInt(n)} rows from ${table}`);
+		await deleteChunked(table, where, args);
 	}
 }
 
