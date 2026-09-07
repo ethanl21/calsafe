@@ -99,6 +99,8 @@ CREATE INDEX IF NOT EXISTS idx_location_county_city ON location(county, city);
 CREATE INDEX IF NOT EXISTS idx_accidents_date ON accidents(collision_date);
 CREATE INDEX IF NOT EXISTS idx_accidents_year ON accidents(accident_year);
 CREATE INDEX IF NOT EXISTS idx_accidents_location ON accidents(location_id);
+CREATE INDEX IF NOT EXISTS idx_accidents_severity ON accidents(severity_id);
+CREATE INDEX IF NOT EXISTS idx_accidents_environment ON accidents(environment_id);
 `;
 
 async function setup() {

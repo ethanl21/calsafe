@@ -845,6 +845,16 @@ async function main() {
 		`Importing years: ${YEARS.join(", ")} (batch=${BATCH}, limit=${LIMIT === Infinity ? "none" : LIMIT})`,
 	);
 	console.log(`Cache dir: ${DATA_DIR}`);
+	// Self-healing schema: the orphan sweeps in cleanYear degenerate to nested
+	// full scans without these (observed hang on full tables). IF NOT EXISTS
+	// makes this a no-op on databases that already have them.
+	await db.execute(
+		`CREATE INDEX IF NOT EXISTS idx_accidents_severity ON accidents(severity_id)`,
+	);
+	await db.execute(
+		`CREATE INDEX IF NOT EXISTS idx_accidents_environment ON accidents(environment_id)`,
+	);
+	console.log("Schema indexes verified.");
 	const t0 = Date.now();
 	for (const year of YEARS) {
 		await importYear(year);
