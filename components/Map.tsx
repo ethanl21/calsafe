@@ -39,10 +39,12 @@ const Map: React.FC<MapProps> = ({ accidents, predictions }) => {
 			zoom={defaultZoom}
 			style={{ height: "75vh", width: "100%" }}
 		>
+			{/* Esri World Street Map: free, no key, verified serving anonymously.
+				OSM standard tiles remain a fallback if compliant use is needed:
+				https://tile.openstreetmap.org/{z}/{x}/{y}.png */}
 			<TileLayer
-				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-				subdomains="abcd"
-				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+				url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+				attribution="Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom"
 			/>
 			<MarkerClusterGroup {...(undefined as any)}>
 				{accidents &&
