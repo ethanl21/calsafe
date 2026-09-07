@@ -14,7 +14,7 @@ export const InfoCard = ({
 	return (
 		<Card className="h-fit">
 			<CardContent className="m-0 p-4">
-				<div className="whitespace-nowrap break-keep">
+				<div className="break-keep whitespace-nowrap">
 					Displaying <span className="font-mono">{num_datapoints}</span> data
 					points from:
 				</div>

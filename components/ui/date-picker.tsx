@@ -10,26 +10,9 @@ import {
 	PopoverContent,
 	PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-	Select,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectLabel,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { useEffect } from "react";
 import { nanoid } from "nanoid";
 import { DATA_START_YEAR, DATA_END_YEAR } from "@/lib/constants";
-
-// util
-const getAllMonths = () => {
-	return Array.from({ length: 12 }, (_, i) => {
-		const date = new Date(1970, i, 1); // Create a date for the first day of each month
-		return format(date, "MMMM"); // Full month name (e.g., "January")
-	});
-};
 
 interface DatePickerProps {
 	date: Date;
@@ -38,6 +21,21 @@ interface DatePickerProps {
 
 export function DatePicker({ date, setDate }: DatePickerProps) {
 	const [_date, _setDate] = React.useState<Date>(date);
+
+	function isDateInRange(date: Date): boolean {
+		const minDate = new Date(DATA_START_YEAR, 0, 1);
+		const maxDate = new Date(DATA_END_YEAR, 11, 31);
+		return date >= minDate && date <= maxDate;
+	}
+
+	function validateDate(date: Date): Date {
+		const minDate = new Date(DATA_START_YEAR, 0, 1);
+		const maxDate = new Date(DATA_END_YEAR, 11, 31);
+
+		if (date < minDate) return minDate;
+		if (date > maxDate) return maxDate;
+		return date;
+	}
 
 	useEffect(() => {
 		// Ensure the default date is within the valid range
@@ -62,21 +60,6 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
 			_setDate(validDate);
 			setDate(validDate);
 		}
-	};
-
-	const isDateInRange = (date: Date): boolean => {
-		const minDate = new Date(DATA_START_YEAR, 0, 1);
-		const maxDate = new Date(DATA_END_YEAR, 11, 31);
-		return date >= minDate && date <= maxDate;
-	};
-
-	const validateDate = (date: Date): Date => {
-		const minDate = new Date(DATA_START_YEAR, 0, 1);
-		const maxDate = new Date(DATA_END_YEAR, 11, 31);
-
-		if (date < minDate) return minDate;
-		if (date > maxDate) return maxDate;
-		return date;
 	};
 
 	return (

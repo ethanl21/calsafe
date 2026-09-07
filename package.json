@@ -4,12 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prettier --write . && next build",
+    "build": "next build",
     "start": "next start",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
     "db:setup": "npx tsx scripts/setup-db.ts",
     "db:import": "npx tsx scripts/import-ccrs.ts",
-    "format": "prettier --log-level=warn --write .",
-    "posttest": "npm run format",
+    "format": "oxfmt",
+    "posttest": "oxfmt --check .",
     "prepare": "husky"
   },
   "dependencies": {
@@ -44,15 +46,21 @@
     "@types/react-dom": "19.2.7",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.81.0",
     "postcss": "^8.4.47",
-    "prettier": "^3.9.6",
-    "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.19.2",
     "typescript": "5.4.5"
   },
   "lint-staged": {
-    "*.{json,js,ts,jsx,tsx,html,md,css}": "prettier --write"
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "oxlint --fix",
+      "oxfmt"
+    ],
+    "*.{json,css,md}": [
+      "oxfmt"
+    ]
   },
   "overrides": {
     "@types/react": "19.2.18",

@@ -1,0 +1,24 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "useTabs": true,
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "sortTailwindcss": {},
+  "ignorePatterns": ["app/centroidData.json"],
+  "overrides": [
+    {
+      "files": ["*.{json,babelrc,eslintrc,remarkrc,prettierrc}"],
+      "options": { "useTabs": false }
+    },
+    {
+      "files": ["*.md"],
+      "options": {
+        "printWidth": 70,
+        "useTabs": false,
+        "trailingComma": "none",
+        "arrowParens": "avoid",
+        "proseWrap": "never"
+      }
+    }
+  ]
+}

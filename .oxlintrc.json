@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "react", "nextjs"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {},
+  "overrides": [
+    {
+      // DatePicker syncs a clamped copy of its date prop into local state;
+      // the setState-in-effect is the mechanism, not an accident.
+      "files": ["components/ui/date-picker.tsx"],
+      "rules": { "react/set-state-in-effect": "allow" }
+    }
+  ],
+  "env": {
+    "builtin": true
+  }
+}
