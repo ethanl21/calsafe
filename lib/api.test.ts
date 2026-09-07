@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { getSearchParams } from "./api";
+import { describe, it, expect, vi, afterEach } from "vitest";
+import { getSearchParams, fetchAccidents } from "./api";
 import { DEFAULT_FILTERS, DEFAULT_CONDITIONS } from "./types";
 
 const start = new Date("2024-01-01");
@@ -94,5 +94,73 @@ describe("getSearchParams", () => {
 		expect(appended.get("lighting")).toBe("C");
 		expect(appended.get("road_surface")).toBe("D");
 		expect(appended.get("road_cond_1")).toBe("E");
+	});
+});
+
+describe("fetchAccidents", () => {
+	afterEach(() => {
+		vi.unstubAllGlobals();
+	});
+
+	const stubFetch = (json: unknown, totalCount: string | null) => {
+		const fetchMock = vi.fn().mockResolvedValue({
+			ok: true,
+			statusText: "OK",
+			json: async () => json,
+			headers: { get: () => totalCount },
+		});
+		vi.stubGlobal("fetch", fetchMock);
+		return fetchMock;
+	};
+
+	it("appends limit and offset to the query", async () => {
+		const fetchMock = stubFetch([], "0");
+		await fetchAccidents("city=X", 30, 60);
+		expect(fetchMock).toHaveBeenCalledOnce();
+		const url = new URL(fetchMock.mock.calls[0][0], "http://localhost");
+		expect(url.searchParams.get("limit")).toBe("30");
+		expect(url.searchParams.get("offset")).toBe("60");
+		expect(url.searchParams.get("city")).toBe("X");
+	});
+
+	it("defaults offset to 0 and leaves params untouched without limit", async () => {
+		const fetchMock = stubFetch([], "0");
+		await fetchAccidents("city=X", 30);
+		const url = new URL(fetchMock.mock.calls[0][0], "http://localhost");
+		expect(url.searchParams.get("offset")).toBe("0");
+
+		const bareMock = stubFetch([], "0");
+		await fetchAccidents("city=X");
+		const bare = new URL(bareMock.mock.calls[0][0], "http://localhost");
+		expect(bare.searchParams.has("limit")).toBe(false);
+		expect(bare.searchParams.has("offset")).toBe(false);
+	});
+
+	it("returns accidents with total from X-Total-Count", async () => {
+		stubFetch([{ case_id: 1 }], "1234");
+		const result = await fetchAccidents("city=X", 30, 0);
+		expect(result.accidents).toEqual([{ case_id: 1 }]);
+		expect(result.total).toBe(1234);
+	});
+
+	it("falls back to payload length when the header is missing", async () => {
+		stubFetch([{ case_id: 1 }, { case_id: 2 }], null);
+		const result = await fetchAccidents("city=X", 30, 0);
+		expect(result.total).toBe(2);
+	});
+
+	it("throws on failed responses and non-array payloads", async () => {
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue({ ok: false, statusText: "Boom" }),
+		);
+		await expect(fetchAccidents("city=X", 30, 0)).rejects.toThrow(
+			"Failed to fetch accidents: Boom",
+		);
+
+		stubFetch({ error: "nope" }, null);
+		await expect(fetchAccidents("city=X", 30, 0)).rejects.toThrow(
+			"Unexpected response format",
+		);
 	});
 });
