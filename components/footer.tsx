@@ -1,5 +1,3 @@
-"use server";
-
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";

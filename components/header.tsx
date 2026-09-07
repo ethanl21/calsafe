@@ -1,5 +1,3 @@
-"use server";
-
 import { NavLink } from "@/components/nav-link";
 import {
 	NavigationMenu,

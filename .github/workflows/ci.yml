@@ -15,7 +15,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx tsc --noEmit
-      - run: npx next lint
+      # lint step returns in Phase 4 with oxlint
       - run: npx prettier --check .
       - run: npm run test --if-present
       - run: npm run build
