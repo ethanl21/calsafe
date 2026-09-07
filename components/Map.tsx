@@ -39,7 +39,11 @@ const Map: React.FC<MapProps> = ({ accidents, predictions }) => {
 			zoom={defaultZoom}
 			style={{ height: "75vh", width: "100%" }}
 		>
-			<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+			<TileLayer
+				url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+				subdomains="abcd"
+				attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+			/>
 			<MarkerClusterGroup {...(undefined as any)}>
 				{accidents &&
 					accidents
