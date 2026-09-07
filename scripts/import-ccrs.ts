@@ -400,28 +400,53 @@ async function insertBatch(
 }
 
 // ---- idempotent reruns: wipe one year's rows (children first) ----
+// Deletes run in small chunks: a single giant DELETE on a full table holds
+// the HTTP round trip open past the client's response timeout (observed on
+// low-power hardware). Chunking keeps every statement fast.
+const DELETE_CHUNK = 10000;
+async function deleteChunked(
+	table: string,
+	where: string,
+	args: Val[],
+): Promise<number> {
+	let deleted = 0;
+	for (;;) {
+		const res = await db.execute({
+			sql: `DELETE FROM ${table} WHERE rowid IN (SELECT rowid FROM ${table} WHERE ${where} LIMIT ${DELETE_CHUNK})`,
+			args,
+		});
+		const n = res.rowsAffected ?? 0;
+		deleted += n;
+		if (n === 0) break;
+	}
+	return deleted;
+}
+
 async function cleanYear(year: number): Promise<void> {
-	await db.execute({
-		sql: `DELETE FROM victims WHERE case_id IN (SELECT case_id FROM accidents WHERE accident_year = ?)`,
-		args: [year],
-	});
-	await db.execute({
-		sql: `DELETE FROM parties WHERE case_id IN (SELECT case_id FROM accidents WHERE accident_year = ?)`,
-		args: [year],
-	});
-	await db.execute({
-		sql: `DELETE FROM accidents WHERE accident_year = ?`,
-		args: [year],
-	});
-	await db.execute(
-		`DELETE FROM location WHERE location_id NOT IN (SELECT location_id FROM accidents)`,
-	);
-	await db.execute(
-		`DELETE FROM severity WHERE severity_id NOT IN (SELECT severity_id FROM accidents)`,
-	);
-	await db.execute(
-		`DELETE FROM environment WHERE environment_id NOT IN (SELECT environment_id FROM accidents)`,
-	);
+	const steps: [string, string, Val[]][] = [
+		[
+			"victims",
+			"case_id IN (SELECT case_id FROM accidents WHERE accident_year = ?)",
+			[year],
+		],
+		[
+			"parties",
+			"case_id IN (SELECT case_id FROM accidents WHERE accident_year = ?)",
+			[year],
+		],
+		["accidents", "accident_year = ?", [year]],
+		["location", "location_id NOT IN (SELECT location_id FROM accidents)", []],
+		["severity", "severity_id NOT IN (SELECT severity_id FROM accidents)", []],
+		[
+			"environment",
+			"environment_id NOT IN (SELECT environment_id FROM accidents)",
+			[],
+		],
+	];
+	for (const [table, where, args] of steps) {
+		const n = await deleteChunked(table, where, args);
+		if (n > 0) console.log(`[${year}] cleaned ${fmtInt(n)} rows from ${table}`);
+	}
 }
 
 const LOC_COLS = [
