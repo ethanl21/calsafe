@@ -8,7 +8,7 @@ import {
 	NavigationMenuLink,
 	navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
-import clsx from "clsx";
+import { clsx } from "cn";
 
 interface NavLinkProps extends PropsWithChildren {
 	href: string;
@@ -18,19 +18,18 @@ export const NavLink = ({ href, children }: NavLinkProps) => {
 
 	return (
 		<NavigationMenuItem>
-			<Link href={href} legacyBehavior passHref>
-				<NavigationMenuLink
-					className={clsx([
-						navigationMenuTriggerStyle(),
+			<NavigationMenuLink
+				render={<Link href={href} />}
+				className={clsx([
+					navigationMenuTriggerStyle(),
 
-						{
-							"font-extrabold": pathname === href,
-						},
-					])}
-				>
-					{children}
-				</NavigationMenuLink>
-			</Link>
+					{
+						"font-extrabold": pathname === href,
+					},
+				])}
+			>
+				{children}
+			</NavigationMenuLink>
 		</NavigationMenuItem>
 	);
 };

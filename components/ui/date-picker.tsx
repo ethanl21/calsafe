@@ -81,17 +81,19 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
 
 	return (
 		<Popover>
-			<PopoverTrigger asChild>
-				<Button
-					variant={"outline"}
-					className={cn(
-						"w-[280px] justify-start text-left font-normal",
-						!_date && "text-muted-foreground",
-					)}
-				>
-					{_date ? format(_date, "MMMM dd, yyyy") : <span>Pick a date</span>}
-				</Button>
-			</PopoverTrigger>
+			<PopoverTrigger
+				render={
+					<Button
+						variant={"outline"}
+						className={cn(
+							"w-[280px] justify-start text-left font-normal",
+							!_date && "text-muted-foreground",
+						)}
+					>
+						{_date ? format(_date, "MMMM dd, yyyy") : <span>Pick a date</span>}
+					</Button>
+				}
+			/>
 			<PopoverContent className="w-[300px] p-4">
 				<div className="flex gap-4">
 					{/* Month Dropdown */}
