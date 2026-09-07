@@ -18,7 +18,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: PropsWithChildren) {
 	return (
-		<html lang="en" className={cn("font-sans", geist.variable)}>
+		<html
+			lang="en"
+			className={cn("font-sans", geist.variable)}
+			suppressHydrationWarning
+		>
 			<body className="flex flex-col">
 				<ThemeProvider
 					attribute="class"
