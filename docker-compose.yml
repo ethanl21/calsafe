@@ -21,6 +21,9 @@ services:
       target: runner
     environment:
       - LIBSQL_URL=http://db:8080
+      # Standalone server defaults are interface-ambiguous in multi-homed
+      # containers; pin all-interfaces so every attached network can reach it.
+      - HOSTNAME=0.0.0.0
     ports:
       - "3000:3000"
     depends_on:
