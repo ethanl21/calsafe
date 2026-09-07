@@ -7,8 +7,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { nanoid } from "nanoid";
-
 interface AreaSelectorProps {
 	locations: County[];
 	currentLocation: CountyAndCity;
@@ -39,7 +37,7 @@ export const AreaSelector = (props: AreaSelectorProps) => {
 						</SelectTrigger>
 						<SelectContent className="max-h-60 overflow-y-auto">
 							{props.locations.map((location) => (
-								<SelectItem key={nanoid()} value={location.name}>
+								<SelectItem key={location.name} value={location.name}>
 									{location.name}
 								</SelectItem>
 							))}
@@ -64,7 +62,7 @@ export const AreaSelector = (props: AreaSelectorProps) => {
 								props.locations
 									.find((l) => l.name === props.currentLocation.county)
 									?.cities.map((city) => (
-										<SelectItem key={nanoid()} value={city}>
+										<SelectItem key={city} value={city}>
 											{city}
 										</SelectItem>
 									))}
