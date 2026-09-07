@@ -20,6 +20,7 @@ import {
 	DATA_YEAR_RANGE_LABEL,
 	DATA_END_YEAR,
 } from "@/lib/constants";
+import { parseDateOnly, formatDateOnly } from "@/lib/dates";
 
 const getDayName = (dayIndex: number) => {
 	const date = new Date(1970, 0, 4 + dayIndex);
@@ -27,8 +28,8 @@ const getDayName = (dayIndex: number) => {
 };
 
 const StatisticsPage = () => {
-	const [startDate, setStartDate] = useState(new Date(DATA_START_DATE));
-	const [endDate, setEndDate] = useState(new Date(DATA_END_DATE));
+	const [startDate, setStartDate] = useState(parseDateOnly(DATA_START_DATE));
+	const [endDate, setEndDate] = useState(parseDateOnly(DATA_END_DATE));
 	const [county, setCounty] = useState("");
 	const [city, setCity] = useState("");
 	const [countyByYearData, setCountyByYearData] = useState<YearlyData[]>([]);
@@ -46,8 +47,8 @@ const StatisticsPage = () => {
 		setLoading(true);
 
 		const params = new URLSearchParams({
-			start_date: startDate.toISOString().slice(0, 10),
-			end_date: endDate.toISOString().slice(0, 10),
+			start_date: formatDateOnly(startDate),
+			end_date: formatDateOnly(endDate),
 			county,
 		});
 		if (city) params.append("city", city);

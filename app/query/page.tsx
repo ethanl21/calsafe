@@ -15,6 +15,7 @@ import {
 	DEFAULT_CONDITIONS,
 } from "@/lib/types";
 import { DATA_START_DATE, DATA_END_DATE } from "@/lib/constants";
+import { parseDateOnly } from "@/lib/dates";
 import { getSearchParams, fetchAccidents } from "@/lib/api";
 import {
 	safetyEquipMap,
@@ -29,8 +30,8 @@ import {
 export default function Page() {
 	const [city, setCity] = useState("");
 	const [county, setCounty] = useState("");
-	const [start_date, setStartDate] = useState(new Date(DATA_START_DATE));
-	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
+	const [start_date, setStartDate] = useState(parseDateOnly(DATA_START_DATE));
+	const [end_date, setEndDate] = useState(parseDateOnly(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[]>([]);
 	const [totalResults, setTotalResults] = useState(0);

@@ -1,4 +1,5 @@
 import { Filters, Conditions } from "./types";
+import { formatDateOnly } from "./dates";
 
 export function getSearchParams(
 	filters: Filters,
@@ -11,8 +12,8 @@ export function getSearchParams(
 	const params = new URLSearchParams();
 	params.append("city", city);
 	params.append("county", county);
-	params.append("start_date", startDate.toISOString().slice(0, 10));
-	params.append("end_date", endDate.toISOString().slice(0, 10));
+	params.append("start_date", formatDateOnly(startDate));
+	params.append("end_date", formatDateOnly(endDate));
 
 	if (filters.fatal) params.append("collision_severity", "1");
 	if (filters.hitAndRun) params.append("hit_and_run", "M,F");

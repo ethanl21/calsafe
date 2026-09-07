@@ -17,6 +17,7 @@ import {
 	DEFAULT_CONDITIONS,
 } from "@/lib/types";
 import { DATA_START_DATE, DATA_END_DATE } from "@/lib/constants";
+import { parseDateOnly } from "@/lib/dates";
 import { getSearchParams } from "@/lib/api";
 
 const Map = dynamic(() => import("../components/Map"), { ssr: false });
@@ -24,8 +25,8 @@ const Map = dynamic(() => import("../components/Map"), { ssr: false });
 export default function Page() {
 	const [city, setCity] = useState("");
 	const [county, setCounty] = useState("");
-	const [start_date, setStartDate] = useState(new Date(DATA_START_DATE));
-	const [end_date, setEndDate] = useState(new Date(DATA_END_DATE));
+	const [start_date, setStartDate] = useState(parseDateOnly(DATA_START_DATE));
+	const [end_date, setEndDate] = useState(parseDateOnly(DATA_END_DATE));
 
 	const [accidents, setAccidents] = useState<Accident[] | undefined>();
 	const [totalResults, setTotalResults] = useState<number | undefined>();

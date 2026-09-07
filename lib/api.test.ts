@@ -1,9 +1,10 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
 import { getSearchParams, fetchAccidents } from "./api";
 import { DEFAULT_FILTERS, DEFAULT_CONDITIONS } from "./types";
+import { parseDateOnly } from "./dates";
 
-const start = new Date("2024-01-01");
-const end = new Date("2024-02-15");
+const start = parseDateOnly("2024-01-01");
+const end = parseDateOnly("2024-02-15");
 
 describe("getSearchParams", () => {
 	it("formats dates as YYYY-MM-DD and passes city/county through", () => {
