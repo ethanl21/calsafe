@@ -51,3 +51,28 @@ export interface YearlyData {
 		alcohol_related: number;
 	};
 }
+
+export interface StatisticsResponse {
+	total_crashes: number;
+	total_injuries: number;
+	total_fatalities: number;
+	pedestrian_accidents: number;
+	bicycle_accidents: number;
+	motorcycle_accidents: number;
+	truck_accidents: number;
+	alcohol_related: number;
+	hit_and_run: number;
+	broadside: number;
+	head_on: number;
+	sideswipe: number;
+	rear_end: number;
+	hit_object: number;
+	roll_over: number;
+	most_accidents_city: { city: string; accident_count: number } | null;
+	most_common_road_pair: {
+		primary_rd: string;
+		secondary_rd: string;
+		count: number;
+	} | null;
+	most_common_day: { day: string; count: number } | null;
+}

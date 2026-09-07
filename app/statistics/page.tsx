@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import { AreaSelector } from "../(components)/area-selector";
 import { DateSelector } from "../(components)/date-selector";
 import { SummaryItem } from "../(components)/summary-item";
+import { StatCard } from "../(components)/stat-card";
 import { YearlyCharts } from "../(components)/yearly-charts";
 import { nanoid } from "nanoid";
 
@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Loader, LoaderCircle } from "lucide-react";
 import { format } from "date-fns";
-import { YearlyData } from "@/lib/types";
+import { YearlyData, type StatisticsResponse } from "@/lib/types";
 import {
 	DATA_START_DATE,
 	DATA_END_DATE,
@@ -33,7 +33,7 @@ const StatisticsPage = () => {
 	const [city, setCity] = useState("");
 	const [countyByYearData, setCountyByYearData] = useState<YearlyData[]>([]);
 	const [summaryData, setSummaryData] = useState<YearlyData[]>([]);
-	const [statistics, setStatistics] = useState<any | null>(null);
+	const [statistics, setStatistics] = useState<StatisticsResponse | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState("");
 
@@ -63,7 +63,7 @@ const StatisticsPage = () => {
 				setStatistics(null);
 				return;
 			}
-			setStatistics(await response.json());
+			setStatistics((await response.json()) as StatisticsResponse);
 		} catch (err) {
 			setError("An error occurred while fetching the data.");
 			console.error("Fetch error:", err);
@@ -157,100 +157,103 @@ const StatisticsPage = () => {
 
 						{statistics && (
 							<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Total Crashes</h3>
+								<StatCard title="Total Crashes">
 									<p>{statistics.total_crashes}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Total Injuries</h3>
+								</StatCard>
+								<StatCard title="Total Injuries">
 									<p>{statistics.total_injuries}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Total Fatalities</h3>
+								</StatCard>
+								<StatCard title="Total Fatalities">
 									<p>{statistics.total_fatalities}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Pedestrian Accidents</h3>
+								</StatCard>
+								<StatCard title="Pedestrian Accidents">
 									<p>{statistics.pedestrian_accidents}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Bicycle Accidents</h3>
+								</StatCard>
+								<StatCard title="Bicycle Accidents">
 									<p>{statistics.bicycle_accidents}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Motorcycle Accidents</h3>
+								</StatCard>
+								<StatCard title="Motorcycle Accidents">
 									<p>{statistics.motorcycle_accidents}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Truck Accidents</h3>
+								</StatCard>
+								<StatCard title="Truck Accidents">
 									<p>{statistics.truck_accidents}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Alcohol-Related Accidents</h3>
+								</StatCard>
+								<StatCard title="Alcohol-Related Accidents">
 									<p>{statistics.alcohol_related}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Hit and Run Accidents</h3>
+								</StatCard>
+								<StatCard title="Hit and Run Accidents">
 									<p>{statistics.hit_and_run}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Head On Accidents</h3>
+								</StatCard>
+								<StatCard title="Head On Accidents">
 									<p>{statistics.head_on}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Sideswipe Accidents</h3>
+								</StatCard>
+								<StatCard title="Sideswipe Accidents">
 									<p>{statistics.sideswipe}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Rear End Accidents</h3>
+								</StatCard>
+								<StatCard title="Rear End Accidents">
 									<p>{statistics.rear_end}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Object Hit Accidents</h3>
+								</StatCard>
+								<StatCard title="Object Hit Accidents">
 									<p>{statistics.hit_object}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Roll-over Accidents</h3>
+								</StatCard>
+								<StatCard title="Roll-over Accidents">
 									<p>{statistics.roll_over}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">City with Most Accidents</h3>
-									<p>{statistics.most_accidents_city.city}</p>
+								</StatCard>
+								<StatCard title="City with Most Accidents">
+									<p>{statistics.most_accidents_city?.city}</p>
 									<p>
 										Accident Count:{" "}
-										{statistics.most_accidents_city.accident_count}
+										{statistics.most_accidents_city?.accident_count}
 									</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">
-										Intersection with Most Accidents
-									</h3>
+								</StatCard>
+								<StatCard title="Intersection with Most Accidents">
 									<p>
-										Primary Road: {statistics.most_common_road_pair.primary_rd}
+										Primary Road: {statistics.most_common_road_pair?.primary_rd}
 									</p>
 									<p>
 										Secondary Road:{" "}
-										{statistics.most_common_road_pair.secondary_rd}
+										{statistics.most_common_road_pair?.secondary_rd}
 									</p>
-									<p>Accidents: {statistics.most_common_road_pair.count}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">Road with Most Accidents</h3>
-									<p>{statistics.most_common_primary_road.primary_rd}</p>
-									<p>Accidents: {statistics.most_common_primary_road.count}</p>
-								</div>
-								<div className="block w-96 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500">
-									<h3 className="font-semibold">
-										Most Common Day for Accidents
-									</h3>
+									<p>Accidents: {statistics.most_common_road_pair?.count}</p>
+								</StatCard>
+								<StatCard title="Road with Most Accidents">
+									<p>
+										{
+											(
+												statistics as StatisticsResponse & {
+													most_common_primary_road?: {
+														primary_rd: string;
+														count: number;
+													};
+												}
+											).most_common_primary_road?.primary_rd
+										}
+									</p>
+									<p>
+										Accidents:{" "}
+										{
+											(
+												statistics as StatisticsResponse & {
+													most_common_primary_road?: {
+														primary_rd: string;
+														count: number;
+													};
+												}
+											).most_common_primary_road?.count
+										}
+									</p>
+								</StatCard>
+								<StatCard title="Most Common Day for Accidents">
 									<p>
 										Day:{" "}
-										{getDayName(
-											Number.parseInt(statistics.most_common_day.day),
-										)}
+										{statistics.most_common_day
+											? getDayName(
+													Number.parseInt(statistics.most_common_day.day),
+												)
+											: null}
 									</p>
-									<p>Count: {statistics.most_common_day.count}</p>
-								</div>
+									<p>Count: {statistics.most_common_day?.count}</p>
+								</StatCard>
 							</div>
 						)}
 					</div>

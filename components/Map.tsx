@@ -30,8 +30,8 @@ interface MapProps {
 }
 
 const Map: React.FC<MapProps> = ({ accidents, predictions }) => {
-	const defaultCenter: [number, number] = [34.055, -118.24];
-	const defaultZoom = 10;
+	const defaultCenter: [number, number] = [33.8813, -117.8851];
+	const defaultZoom = 15;
 
 	return (
 		<MapContainer
