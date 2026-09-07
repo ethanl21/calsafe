@@ -1,6 +1,7 @@
 services:
   db:
     image: ghcr.io/tursodatabase/libsql-server:latest
+    container_name: calsafe-db
     environment:
       - SQLD_NODE=primary
     volumes:
@@ -14,6 +15,7 @@ services:
   app:
     # Built locally on first deploy (`up --build`).
     image: calsafe-app:latest
+    container_name: calsafe-app
     build:
       context: .
       target: runner
@@ -46,7 +48,8 @@ services:
 
 networks:
   # Attach your Nginx Proxy Manager deployment to this network, then point a
-  # proxy host at http://app:3000. Fallback: forward NPM to <server-lan-ip>:3000.
+  # proxy host at http://calsafe-app:3000 (pinned via container_name, so the
+  # hostname never changes). Fallback: forward NPM to <server-lan-ip>:3000.
   proxy:
     name: proxy
     external: true
